@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARISE - SYSTEM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="system-box">
+        <div class="header">
+            <span id="rank">E-RANK</span>
+            <div class="exp-bar"><div id="exp-fill"></div></div>
+            <span id="level">LVL 1</span>
+        </div>
+
+        <h1 id="main-title">[SYSTEM] ARISE</h1>
+        <p id="system-msg"></p>
+
+        <div class="input-area" id="input-area">
+            <input type="text" id="taskInput" placeholder="مثال: عربي, ماث, انجليزي">
+            <button onclick="startSystem()">ARISE</button>
+        </div>
+
+        <div id="quest-list"></div>
+
+        <div id="timer-box" class="hidden">
+            <h2 id="current-task">...</h2>
+            <div id="timer">25:00</div>
+            <button onclick="completeQuest()">تمت المهمة ✓</button>
+            <button onclick="failQuest()" class="fail-btn">فشل</button>
+        </div>
+
+        <div id="penalty-box" class="hidden penalty">
+            <h1>⚠ [PENALTY QUEST] ⚠</h1>
+            <p>لقد فشلت في إكمال المهمة! عقابك: 10 ضغط الآن!</p>
+            <button onclick="closePenalty()">تم العقاب</button>
+        </div>
+    </div>
+
+    <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+    <audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
