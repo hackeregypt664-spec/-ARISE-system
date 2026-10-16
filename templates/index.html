@@ -41,5 +41,33 @@
     <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
     <audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <label>المادة: <input type="text" id="subject"></label>
+<label>السنة: <input type="text" id="year"></label>
+
+<br><br>
+<input type="checkbox" id="customTimeCheck" onchange="toggleTime()"> أنا هحدد الوقت بنفسي
+
+<div id="customTimeDiv" style="display:none;">
+  حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="مثال: 60">
+</div>
+
+<script>
+function toggleTime(){
+  let check = document.getElementById("customTimeCheck");
+  document.getElementById("customTimeDiv").style.display = check.checked ? "block" : "none";
+}
+</script>
+<input type="checkbox" id="customTimeCheck" onchange="toggleTime()"> أنا هحدد الوقت بنفسي
+
+<div id="customTimeDiv" style="display:none;">
+  حدد الوقت بالدقايق: <input type="number" id="customTime">
+</div>
+
+<script>
+function toggleTime(){
+  let check = document.getElementById("customTimeCheck");
+  document.getElementById("customTimeDiv").style.display = check.checked ? "block" : "none";
+}
+</script>
 </body>
 </html>
