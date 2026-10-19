@@ -1,75 +1,160 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARISE SYSTEM</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARISE SYSTEM</title>
+<style>
+body{ background:#0a0a0f; color:white; font-family:Tahoma; display:flex; justify-content:center; padding:20px;}
+.system-box{ background:#15151f; border:2px solid #00ff88; border-radius:15px; padding:20px; width:100%; max-width:500px; box-shadow:0 0 20px #00ff8855;}
+.header{ display:flex; justify-content:space-between; align-items:center;}
+.exp-bar{ flex:1; height:8px; background:#333; margin:0 10px; border-radius:5px; overflow:hidden;}
+#exp-fill{ height:100%; width:10%; background:#00ff88; transition:0.5s;}
+input{ width:100%; padding:12px; border-radius:8px; border:none; margin:10px 0; box-sizing:border-box;}
+button{ width:100%; padding:12px; background:#00ff88; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px;}
+.quest{ background:rgba(255,255,255,0.08); padding:10px; margin:8px 0; border-radius:8px; border-left:4px solid #00ff88;}
+.hidden{ display:none !important;}
+#timer{ font-size:50px; text-align:center; margin:15px 0; font-weight:bold;}
+.fail-btn{ background:#ff4444 !important; margin-top:10px;}
+.penalty{ text-align:center; background:#2a0a0a; border:2px solid red; padding:15px; border-radius:10px;}
+</style>
 </head>
 <body>
-    <div class="system-box">
-        <div class="header">
-            <span id="rank">E-RANK</span>
-            <div class="exp-bar"><div id="exp-fill"></div></div>
-            <span id="level">LVL 1</span>
-        </div>
-
-        <h1>[SYSTEM] ARISE</h1>
-        <p id="system-msg"></p>
-
-        <!-- النظام الذكي الجديد -->
-        <div id="smart-setup" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin: 15px 0;">
-            <label>السنة:
-                <select id="year" onchange="updateSubjects()" style="padding:5px; border-radius:8px; width:100%; margin-bottom:10px;">
-                    <option value="">اختر السنة</option>
-                    <option value="اولى ابتدائي">اولى ابتدائي</option>
-                    <option value="تانية ابتدائي">تانية ابتدائي</option>
-                    <option value="تالتة ابتدائي">تالتة ابتدائي</option>
-                    <option value="رابعة ابتدائي">رابعة ابتدائي</option>
-                    <option value="خامسة ابتدائي">خامسة ابتدائي</option>
-                    <option value="ساتة ابتدائي">ساتة ابتدائي</option>
-                    <option value="اولى اعدادي">اولى اعدادي</option>
-                    <option value="تانية اعدادي">تانية اعدادي</option>
-                    <option value="تالتة اعدادي">تالتة اعدادي</option>
-                    <option value="اولى ثانوي">اولى ثانوي</option>
-                    <option value="تانية ثانوي">تانية ثانوي</option>
-                    <option value="تالتة ثانوي">تالتة ثانوي</option>
-                </select>
-            </label>
-
-            <div style="display:flex; gap:5px; margin-top:10px;">
-                <select id="subject" style="flex:1; padding:8px; border-radius:8px;">
-                    <option value="">اختر السنة الأول</option>
-                </select>
-                <select id="difficulty" style="padding:8px; border-radius:8px;">
-                    <option value="easy">سهل 😴 (25د)</option>
-                    <option value="medium" selected>متوسط 😐 (45د)</option>
-                    <option value="hard">صعب 🔥 (60د)</option>
-                </select>
-                <button onclick="addSmartQuest()" style="padding:8px 12px;">+ إضافة</button>
-            </div>
-            
-            <div id="smart-list" style="margin-top:15px; text-align:right;"></div>
-            
-            <button onclick="startSmartSystem()" style="width:100%; margin-top:15px; padding:12px; background:#00ff88; border:none; border-radius:8px; font-weight:bold; font-size:18px;">ARISE - ابدأ الخطة الذكية</button>
-        </div>
-
-        <div id="quest-list"></div>
-        <div id="timer-box" class="hidden">
-            <h2 id="current-task">...</h2>
-            <div id="timer">30:00</div>
-            <div id="time-info" style="font-size:14px; opacity:0.7;"></div>
-            <button onclick="completeQuest()">تمت المهمة ✓</button>
-            <button onclick="failQuest()" class="fail-btn">فشل</button>
-        </div>
-        <div id="penalty-box" class="hidden penalty">
-            <h1>⚠ [PENALTY QUEST] ⚠</h1>
-            <p>فشلت! عقابك: 20 ضغط!</p>
-            <button onclick="closePenalty()">تم العقاب</button>
-        </div>
+<div class="system-box">
+    <div class="header">
+        <span id="rank">E-RANK</span>
+        <div class="exp-bar"><div id="exp-fill"></div></div>
+        <span id="level">LVL 1</span>
     </div>
-    <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
-    <audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <h2 id="main-title">[SYSTEM] ARISE</h2>
+    <p id="system-msg">اكتب موادك والذكاء الاصطناعي هيحدد الوقت لوحده</p>
+
+    <div id="input-area">
+        <input type="text" id="taskInput" placeholder="مثال: فيزياء محاضرة 5 ساعات, عربي مراجعة سريعة">
+        <button onclick="startSystem()">ARISE</button>
+    </div>
+
+    <div id="quest-list"></div>
+
+    <div id="timer-box" class="hidden">
+        <h3 id="current-task"></h3>
+        <div id="timer">00:00</div>
+        <button onclick="completeQuest()">تمت المهمة ✓</button>
+        <button onclick="failQuest()" class="fail-btn">فشل</button>
+    </div>
+
+    <div id="penalty-box" class="hidden penalty">
+        <h2>⚠ PENALTY QUEST ⚠</h2>
+        <p>فشلت! 20 ضغط حالاً!</p>
+        <button onclick="closePenalty()">تم العقاب</button>
+    </div>
+</div>
+
+<script>
+let quests = [];
+let currentIndex = 0;
+let timeLeft = 0;
+let timerInterval = null;
+let level = 1;
+let exp = 0;
+
+function updateUI(){
+    document.getElementById('level').innerText = `LVL ${level}`;
+    document.getElementById('exp-fill').style.width = `${exp}%`;
+}
+
+function aiDecideTime(fullText){
+    let text = fullText.toLowerCase();
+    let time = 45;
+    let reason = "وقت افتراضي";
+    let cleanName = fullText;
+
+    if(text.includes("ساعتين") || text.includes("ساعتان")){
+        time = 120; reason = "فهمت انها ساعتين";
+    } else if(text.match(/(\d+)\s*ساعة/)){
+        let h = parseInt(text.match(/(\d+)\s*ساعة/)[1]);
+        time = h * 60;
+        reason = `فهمت ${h} ساعة`;
+        if(text.includes("محاضرة")){ time += 30; reason += " + 30د مذاكرة"; }
+    } else if(text.match(/(\d+)\s*دقيقة/)){
+        time = parseInt(text.match(/(\d+)\s*دقيقة/)[1]);
+        reason = `${time} دقيقة`;
+    } else if(text.includes("نص ساعة")){
+        time = 30; reason = "نص ساعة";
+    } else if(text.includes("مراجعة سريعة") || text.includes("سهل")){
+        time = 20; reason = "مراجعة سريعة";
+    } else if(text.includes("صعب") || text.includes("مش فاهم")){
+        time = 90; reason = "صعبة ومحتاجة وقت";
+    } else if(text.includes("حل") || text.includes("واجب")){
+        time = 60; reason = "حل واجب";
+    }
+
+    let firstWord = fullText.split(" ")[0];
+    return { name: firstWord, full: fullText, time: time, reason: reason };
+}
+
+function startSystem(){
+    let input = document.getElementById('taskInput').value;
+    if(!input.trim()){ alert("اكتب حاجة!"); return; }
+
+    let raw = input.split(',').map(t=>t.trim()).filter(t=>t);
+    quests = raw.map(t => aiDecideTime(t));
+    quests.sort((a,b) => b.time - a.time);
+
+    let total = quests.reduce((s,q)=>s+q.time, 0);
+    document.getElementById('system-msg').innerHTML = `الـ AI حلل ${quests.length} مهمة - الإجمالي ${Math.floor(total/60)}س ${total%60}د`;
+
+    let list = document.getElementById('quest-list');
+    list.innerHTML = "";
+    quests.forEach((q,i)=>{
+        list.innerHTML += `<div class="quest"><b>${q.name}</b> - ${q.time}د<br><small>🤖 ${q.reason} | الأصل: ${q.full}</small></div>`;
+    });
+
+    document.getElementById('input-area').classList.add('hidden');
+    currentIndex = 0;
+    startQuest();
+}
+
+function startQuest(){
+    if(currentIndex >= quests.length){
+        document.getElementById('timer-box').classList.add('hidden');
+        document.getElementById('input-area').classList.remove('hidden');
+        document.getElementById('quest-list').innerHTML = "";
+        document.getElementById('system-msg').innerText = "عاش! خلصت كل المهام!";
+        exp += 25; if(exp>=100){level++; exp=0;} updateUI();
+        return;
+    }
+    document.getElementById('timer-box').classList.remove('hidden');
+    document.getElementById('current-task').innerText = `${quests[currentIndex].full} (${quests[currentIndex].reason})`;
+    timeLeft = quests[currentIndex].time * 60;
+    updateTimer();
+    clearInterval(timerInterval);
+    timerInterval = setInterval(()=>{
+        timeLeft--; updateTimer();
+        if(timeLeft <= 0){ failQuest(); }
+    },1000);
+}
+
+function updateTimer(){
+    let m = Math.floor(timeLeft/60);
+    let s = timeLeft%60;
+    document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
+}
+function completeQuest(){
+    clearInterval(timerInterval);
+    currentIndex++;
+    exp += 10; if(exp>=100){level++; exp=0;} updateUI();
+    startQuest();
+}
+function failQuest(){
+    clearInterval(timerInterval);
+    document.getElementById('timer-box').classList.add('hidden');
+    document.getElementById('penalty-box').classList.remove('hidden');
+}
+function closePenalty(){
+    document.getElementById('penalty-box').classList.add('hidden');
+    startQuest();
+}
+</script>
 </body>
 </html>
