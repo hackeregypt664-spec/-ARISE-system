@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARISE SYSTEM - نظام المذاكرة بنظام Solo Leveling</title>
-    <meta name="description" content="حول مذاكرتك لنظام ARISE زي انمي Solo Leveling. مهام، ليفلات، رانكات، وعقاب لو فشلت. ذاكر بطريقة ممتعة!">
+    <title>ARISE SYSTEM</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -18,31 +17,53 @@
         <h1 id="main-title">[SYSTEM] ARISE</h1>
         <p id="system-msg"></p>
 
-        <!-- === اختيار السنة === -->
+        <!-- اختيار السنة -->
         <div id="year-select-area">
-            <h3>اختار سنتك الدراسية:</h3>
-            <div class="year-buttons">
-                <button onclick="selectYear('1 ثانوي')">1 ثانوي</button>
-                <button onclick="selectYear('2 ثانوي علمي')">2 ثانوي علمي</button>
-                <button onclick="selectYear('2 ثانوي ادبي')">2 ثانوي ادبي</button>
-                <button onclick="selectYear('3 ثانوي علمي علوم')">3 علمي علوم</button>
-                <button onclick="selectYear('3 ثانوي علمي رياضة')">3 علمي رياضة</button>
-                <button onclick="selectYear('3 ثانوي ادبي')">3 ادبي</button>
+            <h3>[SYSTEM] اختار مرحلتك:</h3>
+            <div>
+                <h4 style="color:#00ff88;">-- ثانوي --</h4>
+                <div class="year-buttons">
+                    <button onclick="selectYear('1 ثانوي')">1 ثانوي</button>
+                    <button onclick="selectYear('2 ثانوي علمي')">2 علمي</button>
+                    <button onclick="selectYear('2 ثانوي ادبي')">2 ادبي</button>
+                    <button onclick="selectYear('3 ثانوي علمي علوم')">3 علوم</button>
+                    <button onclick="selectYear('3 ثانوي علمي رياضة')">3 رياضة</button>
+                    <button onclick="selectYear('3 ثانوي ادبي')">3 ادبي</button>
+                </div>
+            </div>
+            <div>
+                <h4 style="color:#ffaa00;">-- اعدادي --</h4>
+                <div class="year-buttons">
+                    <button onclick="selectYear('1 اعدادي')">1 اعدادي</button>
+                    <button onclick="selectYear('2 اعدادي')">2 اعدادي</button>
+                    <button onclick="selectYear('3 اعدادي')">3 اعدادي</button>
+                </div>
+            </div>
+            <div>
+                <h4 style="color:#ff0040;">-- ابتدائي --</h4>
+                <div class="year-buttons">
+                    <button onclick="selectYear('1 ابتدائي')">1 ابتدائي</button>
+                    <button onclick="selectYear('2 ابتدائي')">2 ابتدائي</button>
+                    <button onclick="selectYear('3 ابتدائي')">3 ابتدائي</button>
+                    <button onclick="selectYear('4 ابتدائي')">4 ابتدائي</button>
+                    <button onclick="selectYear('5 ابتدائي')">5 ابتدائي</button>
+                    <button onclick="selectYear('6 ابتدائي')">6 ابتدائي</button>
+                </div>
             </div>
             <div id="subjects-container"></div>
-            <button onclick="changeYear()" style="margin-top:10px; background:transparent; border:1px solid #666;">تغيير السنة</button>
         </div>
 
         <div class="input-area hidden" id="input-area">
-            <input type="text" id="taskInput" placeholder="مثال: عربي, ماث, انجليزي">
+            <input type="text" id="taskInput" placeholder="موادك هتظهر هنا...">
             <button onclick="startSystem()">ARISE</button>
+            <br>
+            <button onclick="changeYear()" style="background:transparent; border:1px solid #666; color:#666; font-size:10px; margin-top:10px;">تغيير السنة</button>
         </div>
 
-        <!-- الاضافات -->
         <div style="margin: 15px 0;" id="custom-area">
             <input type="checkbox" id="customTimeCheck" onchange="toggleTime()"> أنا هحدد الوقت بنفسي
             <div id="customTimeDiv" style="display:none; margin-top:10px;">
-              حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="مثال: 60">
+              حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="60">
             </div>
         </div>
 
@@ -57,14 +78,13 @@
 
         <div id="penalty-box" class="hidden penalty">
             <h1>⚠ [PENALTY QUEST] ⚠</h1>
-            <p>لقد فشلت في إكمال المهمة! عقابك: 10 ضغط الآن!</p>
+            <p>لقد فشلت! عقابك: 10 ضغط الآن!</p>
             <button onclick="closePenalty()">تم العقاب</button>
         </div>
     </div>
 
     <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
     <audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
-    
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

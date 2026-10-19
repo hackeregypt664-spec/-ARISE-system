@@ -4,15 +4,16 @@ let timeLeft = 0;
 let timerInterval = null;
 let level = localStorage.getItem('lvl')? parseInt(localStorage.getItem('lvl')) : 1;
 let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0;
+let selectedYear = localStorage.getItem('selectedYear') || "";
 
 window.onload = () => { 
     updateUI(); 
     if(localStorage.getItem('selectedYear')){
         document.getElementById('year-select-area')?.classList.add('hidden');
         document.getElementById('input-area')?.classList.remove('hidden');
-        typeWriter("ارجعي كملي مهامك يا هنتر.", "system-msg");
+        typeWriter("ارجعي كملي يا هنتر.", "system-msg");
     } else {
-        typeWriter("اختاري السنة الدراسية الأول.", "system-msg"); 
+        typeWriter("اختاري مرحلتك الدراسية الأول.", "system-msg"); 
     }
 }
 
@@ -21,13 +22,7 @@ function typeWriter(text, elementId, speed=40){
     let el = document.getElementById(elementId);
     if(!el) return;
     el.innerHTML="";
-    function typing(){ 
-        if(i<text.length){ 
-            el.innerHTML+=text.charAt(i); 
-            i++; 
-            setTimeout(typing, speed);
-        } 
-    }
+    function typing(){ if(i<text.length){ el.innerHTML+=text.charAt(i); i++; setTimeout(typing, speed);} }
     typing();
 }
 
@@ -45,138 +40,80 @@ function startSystem(){
     document.getElementById('arise-sound')?.play().catch(()=>{});
     quests=input.split(',').map(t=>t.trim()).filter(t=>t);
     typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة. ابدأي.`, "system-msg");
-    let list=document.getElementById('quest-list'); 
-    list.innerHTML='';
-    quests.forEach((q,i)=>{
-        list.innerHTML+=`<div class="quest">[Quest ${i+1}] ${q}</div>`;
-    });
+    let list=document.getElementById('quest-list'); list.innerHTML='';
+    quests.forEach((q,i)=>{ list.innerHTML+=`<div class="quest">[Quest ${i+1}] ${q}</div>`; });
     document.getElementById('input-area').classList.add('hidden');
-    currentIndex=0; 
-    startQuest();
+    currentIndex=0; startQuest();
 }
 
 function startQuest(){
     if(currentIndex>=quests.length){
-        exp+=25; 
-        if(exp>=100){
-            level++; exp=0; 
-            typeWriter(`[SYSTEM] LEVEL UP! انتي الآن LVL ${level}`, "system-msg");
-        } else {
-            typeWriter(`[SYSTEM] كل المهام اكتملت! +25 EXP`, "system-msg");
-        }
-        localStorage.setItem('lvl', level); 
-        localStorage.setItem('exp', exp); 
-        updateUI();
+        exp+=25; if(exp>=100){ level++; exp=0; typeWriter(`[SYSTEM] LEVEL UP! LVL ${level}`, "system-msg");} 
+        else { typeWriter(`[SYSTEM] كل المهام اكتملت! +25 EXP`, "system-msg"); }
+        localStorage.setItem('lvl', level); localStorage.setItem('exp', exp); updateUI();
         document.getElementById('timer-box').classList.add('hidden');
-        document.getElementById('input-area').classList.remove('hidden');
-        return;
+        document.getElementById('input-area').classList.remove('hidden'); return;
     }
-    
     document.getElementById('timer-box').classList.remove('hidden');
     document.getElementById('current-task').innerText='مهمة: '+quests[currentIndex];
-    
     const customCheck = document.getElementById('customTimeCheck');
     const customInput = document.getElementById('customTime');
     let minutes = 25;
-
-    if(customCheck && customCheck.checked && customInput && customInput.value > 0){
-        minutes = parseInt(customInput.value);
-    } else {
-        minutes = currentIndex === 0 ? 25 : 45;
-    }
-
+    if(customCheck && customCheck.checked && customInput && customInput.value > 0){ minutes = parseInt(customInput.value); }
+    else { minutes = currentIndex === 0 ? 25 : 45; }
     timeLeft = minutes * 60;
-    
-    updateTimer(); 
-    clearInterval(timerInterval);
-    timerInterval=setInterval(()=>{
-        timeLeft--;
-        updateTimer();
-        if(timeLeft<=0){failQuest();}
-    },1000);
+    updateTimer(); clearInterval(timerInterval);
+    timerInterval=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0){failQuest();} },1000);
 }
 
-function updateTimer(){ 
-    let m=Math.floor(timeLeft/60); 
-    let s=timeLeft%60; 
-    document.getElementById('timer').innerText=`${m}:${s<10?'0'+s:s}`; 
-}
+function updateTimer(){ let m=Math.floor(timeLeft/60); let s=timeLeft%60; document.getElementById('timer').innerText=`${m}:${s<10?'0'+s:s}`; }
+function completeQuest(){ clearInterval(timerInterval); exp+=10; if(exp>=100){level++; exp=0;} localStorage.setItem('lvl', level); localStorage.setItem('exp', exp); updateUI(); document.getElementById('alarm')?.play().catch(()=>{}); currentIndex++; startQuest(); }
+function failQuest(){ clearInterval(timerInterval); document.getElementById('timer-box').classList.add('hidden'); document.getElementById('penalty-box').classList.remove('hidden'); }
+function closePenalty(){ document.getElementById('penalty-box').classList.add('hidden'); startQuest(); }
+function toggleTime(){ let check = document.getElementById("customTimeCheck"); let div = document.getElementById("customTimeDiv"); if(check && div){ div.style.display = check.checked ? "block" : "none"; } }
 
-function completeQuest(){ 
-    clearInterval(timerInterval); 
-    exp+=10; 
-    if(exp>=100){level++; exp=0;} 
-    localStorage.setItem('lvl', level); 
-    localStorage.setItem('exp', exp); 
-    updateUI(); 
-    document.getElementById('alarm')?.play().catch(()=>{}); 
-    currentIndex++; 
-    startQuest(); 
-}
-
-function failQuest(){ 
-    clearInterval(timerInterval); 
-    document.getElementById('timer-box').classList.add('hidden'); 
-    document.getElementById('penalty-box').classList.remove('hidden'); 
-}
-
-function closePenalty(){ 
-    document.getElementById('penalty-box').classList.add('hidden'); 
-    startQuest(); 
-}
-
-function toggleTime(){
-  let check = document.getElementById("customTimeCheck");
-  let div = document.getElementById("customTimeDiv");
-  if(check && div){
-      div.style.display = check.checked ? "block" : "none";
-  }
-}
-
-// === نظام السنوات الدراسية ===
 const subjectsByYear = {
-    "1 ثانوي": ["عربي", "انجليزي", "رياضة", "فيزياء", "كيمياء", "احياء", "تاريخ", "جغرافيا", "فلسفة"],
+    "1 ثانوي": ["عربي", "انجليزي", "رياضة", "فيزياء", "كيمياء", "احياء", "تاريخ", "جغرافيا", "فلسفة", "دين"],
     "2 ثانوي علمي": ["عربي", "انجليزي", "رياضة", "فيزياء", "كيمياء", "احياء", "الماني/فرنساوي"],
     "2 ثانوي ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "علم نفس", "فلسفة", "الماني/فرنساوي"],
-    "3 ثانوي علمي علوم": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "جيولوجيا", "الماني/فرنساوي"],
-    "3 ثانوي علمي رياضة": ["عربي", "انجليزي", "فيزياء", "كيمياء", "رياضة بحتة", "رياضة تطبيقية", "الماني/فرنساوي"],
-    "3 ثانوي ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "علم نفس", "فلسفة", "الماني/فرنساوي"]
+    "3 ثانوي علمي علوم": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "جيولوجيا"],
+    "3 ثانوي علمي رياضة": ["عربي", "انجليزي", "فيزياء", "كيمياء", "رياضة بحتة", "تطبيقية"],
+    "3 ثانوي ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "علم نفس", "فلسفة"],
+    "1 اعدادي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب"],
+    "2 اعدادي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب"],
+    "3 اعدادي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب"],
+    "1 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين"],
+    "2 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين"],
+    "3 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين"],
+    "4 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"],
+    "5 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"],
+    "6 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"]
 };
-
-let selectedYear = localStorage.getItem('selectedYear') || "";
 
 function selectYear(year){
     selectedYear = year;
     localStorage.setItem('selectedYear', year);
     showSubjects(year);
 }
-
 function showSubjects(year){
     const container = document.getElementById('subjects-container');
     if(!container) return;
     container.innerHTML = `<h3>مواد ${year}:</h3>`;
     subjectsByYear[year].forEach(sub => {
-        container.innerHTML += `
-        <label class="subject-check">
-            <input type="checkbox" value="${sub}" class="subjectBox"> ${sub}
-        </label>`;
+        container.innerHTML += `<label class="subject-check"><input type="checkbox" value="${sub}" class="subjectBox"> ${sub}</label>`;
     });
     container.innerHTML += `<button onclick="confirmSubjects()">تأكيد المواد</button>`;
 }
-
 function confirmSubjects(){
     const checked = document.querySelectorAll('.subjectBox:checked');
     let selected = Array.from(checked).map(c => c.value);
     if(selected.length === 0){ alert("اختار مادة واحدة على الأقل"); return; }
-    
     localStorage.setItem('mySubjects', JSON.stringify(selected));
     document.getElementById('year-select-area').classList.add('hidden');
     document.getElementById('input-area').classList.remove('hidden');
-    
     document.getElementById('taskInput').value = selected.join(', ');
-    typeWriter(`تمام! اخترت مواد ${selectedYear}. عدلي عليهم لو عايزة.`, "system-msg");
+    typeWriter(`تمام! اخترت مواد ${selectedYear}.`, "system-msg");
 }
-
 function changeYear(){
     localStorage.removeItem('selectedYear');
     localStorage.removeItem('mySubjects');
