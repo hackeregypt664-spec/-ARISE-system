@@ -14,73 +14,60 @@
             <span id="level">LVL 1</span>
         </div>
 
-        <h1 id="main-title">[SYSTEM] ARISE</h1>
+        <h1>[SYSTEM] ARISE</h1>
         <p id="system-msg"></p>
 
-        <div class="input-area" id="input-area">
-            <input type="text" id="taskInput" placeholder="مثال: عربي, ماث, انجليزي">
-            <button onclick="startSystem()">ARISE</button>
-        </div>
-
-        <!-- === هنا مكان الاضافة === -->
-        <div style="margin: 15px 0; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px;">
-            
+        <!-- النظام الذكي الجديد -->
+        <div id="smart-setup" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin: 15px 0;">
             <label>السنة:
-                <select id="year" onchange="updateSubjects()" style="padding:5px; border-radius:8px;">
+                <select id="year" onchange="updateSubjects()" style="padding:5px; border-radius:8px; width:100%; margin-bottom:10px;">
                     <option value="">اختر السنة</option>
-                    <optgroup label="ابتدائي">
-                        <option value="اولى ابتدائي">اولى ابتدائي</option>
-                        <option value="تانية ابتدائي">تانية ابتدائي</option>
-                        <option value="تالتة ابتدائي">تالتة ابتدائي</option>
-                        <option value="رابعة ابتدائي">رابعة ابتدائي</option>
-                        <option value="خامسة ابتدائي">خامسة ابتدائي</option>
-                        <option value="ساتة ابتدائي">ساتة ابتدائي</option>
-                    </optgroup>
-                    <optgroup label="اعدادي">
-                        <option value="اولى اعدادي">اولى اعدادي</option>
-                        <option value="تانية اعدادي">تانية اعدادي</option>
-                        <option value="تالتة اعدادي">تالتة اعدادي</option>
-                    </optgroup>
-                    <optgroup label="ثانوي">
-                        <option value="اولى ثانوي">اولى ثانوي</option>
-                        <option value="تانية ثانوي">تانية ثانوي</option>
-                        <option value="تالتة ثانوي">تالتة ثانوي</option>
-                    </optgroup>
+                    <option value="اولى ابتدائي">اولى ابتدائي</option>
+                    <option value="تانية ابتدائي">تانية ابتدائي</option>
+                    <option value="تالتة ابتدائي">تالتة ابتدائي</option>
+                    <option value="رابعة ابتدائي">رابعة ابتدائي</option>
+                    <option value="خامسة ابتدائي">خامسة ابتدائي</option>
+                    <option value="ساتة ابتدائي">ساتة ابتدائي</option>
+                    <option value="اولى اعدادي">اولى اعدادي</option>
+                    <option value="تانية اعدادي">تانية اعدادي</option>
+                    <option value="تالتة اعدادي">تالتة اعدادي</option>
+                    <option value="اولى ثانوي">اولى ثانوي</option>
+                    <option value="تانية ثانوي">تانية ثانوي</option>
+                    <option value="تالتة ثانوي">تالتة ثانوي</option>
                 </select>
             </label>
 
-            <label>المادة:
-                <select id="subject" style="padding:5px; border-radius:8px;">
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <select id="subject" style="flex:1; padding:8px; border-radius:8px;">
                     <option value="">اختر السنة الأول</option>
                 </select>
-            </label>
-
-        </div>
-
-        <div style="margin-top:10px;">
-            <input type="checkbox" id="customTimeCheck" onchange="toggleTime()"> أنا هحدد الوقت بنفسي
-            <div id="customTimeDiv" style="display:none; margin-top:10px;">
-              حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="60">
+                <select id="difficulty" style="padding:8px; border-radius:8px;">
+                    <option value="easy">سهل 😴 (25د)</option>
+                    <option value="medium" selected>متوسط 😐 (45د)</option>
+                    <option value="hard">صعب 🔥 (60د)</option>
+                </select>
+                <button onclick="addSmartQuest()" style="padding:8px 12px;">+ إضافة</button>
             </div>
+            
+            <div id="smart-list" style="margin-top:15px; text-align:right;"></div>
+            
+            <button onclick="startSmartSystem()" style="width:100%; margin-top:15px; padding:12px; background:#00ff88; border:none; border-radius:8px; font-weight:bold; font-size:18px;">ARISE - ابدأ الخطة الذكية</button>
         </div>
-        <!-- === نهاية الاضافة === -->
 
         <div id="quest-list"></div>
-
         <div id="timer-box" class="hidden">
             <h2 id="current-task">...</h2>
             <div id="timer">30:00</div>
+            <div id="time-info" style="font-size:14px; opacity:0.7;"></div>
             <button onclick="completeQuest()">تمت المهمة ✓</button>
             <button onclick="failQuest()" class="fail-btn">فشل</button>
         </div>
-
         <div id="penalty-box" class="hidden penalty">
             <h1>⚠ [PENALTY QUEST] ⚠</h1>
-            <p>لقد فشلت في إكمال المهمة! عقابك: 10 ضغط الآن!</p>
+            <p>فشلت! عقابك: 20 ضغط!</p>
             <button onclick="closePenalty()">تم العقاب</button>
         </div>
     </div>
-
     <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
     <audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
