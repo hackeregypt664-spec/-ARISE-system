@@ -7,13 +7,11 @@ let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0
 let selectedYear = localStorage.getItem('selectedYear') || "";
 
 window.onload = () => { 
-    updateUI(); 
-    if(localStorage.getItem('selectedYear')){
+    updateUI();
         document.getElementById('year-select-area')?.classList.add('hidden');
         document.getElementById('input-area')?.classList.remove('hidden');
         typeWriter("اختاري مرحلتك الدراسية الأول.", "system-msg"); 
     }
-}
 
 function typeWriter(text, elementId, speed=40){
     let i=0; 
