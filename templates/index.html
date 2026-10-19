@@ -6,14 +6,40 @@
     <title>ARISE SYSTEM</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script>
-        // كود Monetag - كل دخول بفلوس
-        function earnAndEnter() {
-          window.open("https://uplcm.com/4/12073757", "_blank");
-        }
-        
-        // هنعدل دالة البداية عشان تكسب قبل ما يبدأ
-        const originalStartSystem = window.startSystem;
-    </script>
+// كود الاعلان - مرة واحدة كل ساعة بس
+function earnWithAd() {
+  let lastAd = localStorage.getItem('lastAdTime');
+  let now = Date.now();
+  // 3600000 = ساعة واحدة
+  if (!lastAd || (now - lastAd) > 3600000) {
+    window.open("https://uplcm.com/4/12073821", "_blank");
+    localStorage.setItem('lastAdTime', now);
+    console.log("Ad opened - you earned!");
+  }
+}
+</script>
+
+<!-- الزرار الجديد -->
+<div id="input-area">
+  <input type="text" id="taskInput" placeholder="موادك هتظهر هنا...">
+  <button onclick="earnWithAd(); startSystem();" style="
+    background: linear-gradient(90deg, #00ff88, #00ccff);
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 0 15px #00ff88;
+  ">
+    ARISE SYSTEM 🚀
+  </button>
+  <p style="font-size:10px; color:#666; margin-top:8px; text-align:center;">
+    الدخول يدعم تطوير النظام (اعلان واحد كل ساعة)
+  </p>
+</div>
 </head>
 <body>
     <div class="system-box">
