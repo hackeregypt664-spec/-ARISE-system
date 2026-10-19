@@ -19,40 +19,57 @@
 
         <!-- اختيار السنة -->
         <div id="year-select-area">
-            <h3>[SYSTEM] اختار مرحلتك:</h3>
-            <div>
-                <h4 style="color:#00ff88;">-- ثانوي --</h4>
-                <div class="year-buttons">
-                    <button onclick="selectYear('1 ثانوي')">1 ثانوي</button>
-                    <button onclick="selectYear('2 ثانوي علمي')">2 علمي</button>
-                    <button onclick="selectYear('2 ثانوي ادبي')">2 ادبي</button>
-                    <button onclick="selectYear('3 ثانوي علمي علوم')">3 علوم</button>
-                    <button onclick="selectYear('3 ثانوي علمي رياضة')">3 رياضة</button>
-                    <button onclick="selectYear('3 ثانوي ادبي')">3 ادبي</button>
-                </div>
-            </div>
-            <div>
-                <h4 style="color:#ffaa00;">-- اعدادي --</h4>
-                <div class="year-buttons">
-                    <button onclick="selectYear('1 اعدادي')">1 اعدادي</button>
-                    <button onclick="selectYear('2 اعدادي')">2 اعدادي</button>
-                    <button onclick="selectYear('3 اعدادي')">3 اعدادي</button>
-                </div>
-            </div>
-            <div>
-                <h4 style="color:#ff0040;">-- ابتدائي --</h4>
-                <div class="year-buttons">
-                    <button onclick="selectYear('1 ابتدائي')">1 ابتدائي</button>
-                    <button onclick="selectYear('2 ابتدائي')">2 ابتدائي</button>
-                    <button onclick="selectYear('3 ابتدائي')">3 ابتدائي</button>
-                    <button onclick="selectYear('4 ابتدائي')">4 ابتدائي</button>
-                    <button onclick="selectYear('5 ابتدائي')">5 ابتدائي</button>
-                    <button onclick="selectYear('6 ابتدائي')">6 ابتدائي</button>
-                </div>
-            </div>
-            <div id="subjects-container"></div>
+    <h3>[SYSTEM] اختار مرحلتك:</h3>
+    
+    <div>
+        <h4 style="color:#00ff88;">-- ثانوي عام --</h4>
+        <div class="year-buttons">
+            <button onclick="selectYear('1 ثانوي')">1 ثانوي</button>
+            <button onclick="selectYear('2 ثانوي علمي')">2 علمي</button>
+            <button onclick="selectYear('2 ثانوي ادبي')">2 ادبي</button>
+            <button onclick="selectYear('3 ثانوي علمي علوم')">3 علوم</button>
+            <button onclick="selectYear('3 ثانوي علمي رياضة')">3 رياضة</button>
+            <button onclick="selectYear('3 ثانوي ادبي')">3 ادبي</button>
         </div>
+    </div>
 
+    <div>
+        <h4 style="color:#00e5ff; text-shadow:0 0 10px #00e5ff;">-- أزهر --</h4>
+        <div class="year-buttons">
+            <button onclick="selectYear('1 ابتدائي ازهر')">ابتدائي ازهر</button>
+            <button onclick="selectYear('1 اعدادي ازهر')">1 اعدادي ازهر</button>
+            <button onclick="selectYear('2 اعدادي ازهر')">2 اعدادي ازهر</button>
+            <button onclick="selectYear('3 اعدادي ازهر')">3 اعدادي ازهر</button>
+            <button onclick="selectYear('1 ثانوي ازهر علمي')">1 ث ازهر علمي</button>
+            <button onclick="selectYear('1 ثانوي ازهر ادبي')">1 ث ازهر ادبي</button>
+            <button onclick="selectYear('3 ثانوي ازهر علمي')">3 ث ازهر علمي</button>
+            <button onclick="selectYear('3 ثانوي ازهر ادبي')">3 ث ازهر ادبي</button>
+        </div>
+    </div>
+
+    <div>
+        <h4 style="color:#ffaa00;">-- اعدادي عام --</h4>
+        <div class="year-buttons">
+            <button onclick="selectYear('1 اعدادي')">1 اعدادي</button>
+            <button onclick="selectYear('2 اعدادي')">2 اعدادي</button>
+            <button onclick="selectYear('3 اعدادي')">3 اعدادي</button>
+        </div>
+    </div>
+
+    <div>
+        <h4 style="color:#ff0040;">-- ابتدائي عام --</h4>
+        <div class="year-buttons">
+            <button onclick="selectYear('1 ابتدائي')">1 ابتدائي</button>
+            <button onclick="selectYear('2 ابتدائي')">2 ابتدائي</button>
+            <button onclick="selectYear('3 ابتدائي')">3 ابتدائي</button>
+            <button onclick="selectYear('4 ابتدائي')">4 ابتدائي</button>
+            <button onclick="selectYear('5 ابتدائي')">5 ابتدائي</button>
+            <button onclick="selectYear('6 ابتدائي')">6 ابتدائي</button>
+        </div>
+    </div>
+
+    <div id="subjects-container"></div>
+</div>
         <div class="input-area hidden" id="input-area">
             <input type="text" id="taskInput" placeholder="موادك هتظهر هنا...">
             <button onclick="startSystem()">ARISE</button>
