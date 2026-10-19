@@ -1,5 +1,18 @@
-// اظهار خانة تحديد الوقت
-document.addEventListener('DOMContentLoaded', ()=>{
+let quests = []; 
+let currentIndex = 0; 
+let timeLeft = 0; 
+let totalQuestTime = 0;
+let timerInterval = null;
+let restInterval = null;
+let level = localStorage.getItem('lvl')? parseInt(localStorage.getItem('lvl')) : 1;
+let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0;
+let selectedYear = localStorage.getItem('selectedYear') || "";
+
+window.onload = () => { 
+    updateUI(); 
+    typeWriter("اختاري مرحلتك الدراسية الأول.", "system-msg");
+    
+    // زرار تحديد الوقت
     const check = document.getElementById('customTimeCheck');
     const div = document.getElementById('customTimeDiv');
     if(check){
@@ -7,21 +20,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             div.style.display = check.checked ? 'block' : 'none';
         });
     }
-});
-let quests = []; 
-let currentIndex = 0; 
-let timeLeft = 0; 
-let timerInterval = null;
-let level = localStorage.getItem('lvl')? parseInt(localStorage.getItem('lvl')) : 1;
-let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0;
-let selectedYear = localStorage.getItem('selectedYear') || "";
-
-window.onload = () => { 
-    updateUI();
-        document.getElementById('year-select-area')?.classList.add('hidden');
-        document.getElementById('input-area')?.classList.remove('hidden');
-        typeWriter("اختاري مرحلتك الدراسية الأول.", "system-msg"); 
-    }
+}
 
 function typeWriter(text, elementId, speed=40){
     let i=0; 
@@ -49,7 +48,9 @@ function startSystem(){
     let list=document.getElementById('quest-list'); list.innerHTML='';
     quests.forEach((q,i)=>{ list.innerHTML+=`<div class="quest">[Quest ${i+1}] ${q}</div>`; });
     document.getElementById('input-area').classList.add('hidden');
-    currentIndex=0; startQuest();
+    document.getElementById('custom-area').classList.add('hidden');
+    currentIndex=0; 
+    startQuest();
 }
 
 function startQuest(){
@@ -58,45 +59,104 @@ function startQuest(){
         else { typeWriter(`[SYSTEM] كل المهام اكتملت! +25 EXP`, "system-msg"); }
         localStorage.setItem('lvl', level); localStorage.setItem('exp', exp); updateUI();
         document.getElementById('timer-box').classList.add('hidden');
-        document.getElementById('input-area').classList.remove('hidden'); return;
+        document.getElementById('rest-box').classList.add('hidden');
+        document.getElementById('input-area').classList.remove('hidden'); 
+        document.getElementById('custom-area').classList.remove('hidden');
+        return;
     }
     document.getElementById('timer-box').classList.remove('hidden');
     document.getElementById('rest-box').classList.add('hidden');
     document.getElementById('current-task').innerText='مهمة: '+quests[currentIndex];
     
-    // هنا بقى بياخد الوقت اللي انت محدده
     const customCheck = document.getElementById('customTimeCheck');
     const customInput = document.getElementById('customTime');
     let minutes = 25;
     if(customCheck && customCheck.checked && customInput && customInput.value > 0){
         minutes = parseInt(customInput.value);
     } else {
-        minutes = currentIndex === 0 ? 25 : 45;
+        minutes = 45;
     }
     
     timeLeft = minutes * 60;
-    totalQuestTime = timeLeft; // نحفظ الوقت الأصلي عشان نحسب الراحة
+    totalQuestTime = timeLeft;
     updateTimer(); 
     clearInterval(timerInterval);
-    timerInterval=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0){failQuest();} },1000);
+    timerInterval=setInterval(()=>{ 
+        timeLeft--; 
+        updateTimer(); 
+        if(timeLeft<=0){failQuest();} 
+    },1000);
 }
 
-function updateTimer(){ let m=Math.floor(timeLeft/60); let s=timeLeft%60; document.getElementById('timer').innerText=`${m}:${s<10?'0'+s:s}`; }
-function completeQuest(){ clearInterval(timerInterval); exp+=10; if(exp>=100){level++; exp=0;} localStorage.setItem('lvl', level); localStorage.setItem('exp', exp); updateUI(); document.getElementById('alarm')?.play().catch(()=>{}); currentIndex++; startQuest(); }
-function failQuest(){ clearInterval(timerInterval); document.getElementById('timer-box').classList.add('hidden'); document.getElementById('penalty-box').classList.remove('hidden'); }
+function updateTimer(){ 
+    let m=Math.floor(timeLeft/60); 
+    let s=timeLeft%60; 
+    document.getElementById('timer').innerText=`${m}:${s<10?'0'+s:s}`; 
+}
+
+function completeQuest(){ 
+    clearInterval(timerInterval);
+    // لو فاضل اكتر من 10 ثواني يبقى خلص بدري -> راحة
+    if(timeLeft > 10){
+        let restMins = Math.floor(timeLeft / 60);
+        let restSecs = timeLeft % 60;
+        typeWriter(`[SYSTEM] خلصت بدري! فاضل ${restMins} دقيقة راحة.`, "system-msg");
+        document.getElementById('timer-box').classList.add('hidden');
+        document.getElementById('rest-box').classList.remove('hidden');
+        startRestTimer(timeLeft);
+    } else {
+        // خلص في وقته
+        exp+=10; 
+        if(exp>=100){level++; exp=0;} 
+        localStorage.setItem('lvl', level); 
+        localStorage.setItem('exp', exp); 
+        updateUI(); 
+        document.getElementById('alarm')?.play().catch(()=>{}); 
+        currentIndex++; 
+        startQuest();
+    }
+}
+
+function startRestTimer(restTime){
+    let restLeft = restTime;
+    document.getElementById('rest-timer').innerText = `${Math.floor(restLeft/60)}:${restLeft%60<10?'0':''}${restLeft%60}`;
+    clearInterval(restInterval);
+    restInterval = setInterval(()=>{
+        restLeft--;
+        document.getElementById('rest-timer').innerText = `${Math.floor(restLeft/60)}:${restLeft%60<10?'0':''}${restLeft%60}`;
+        if(restLeft <= 0){
+            clearInterval(restInterval);
+            skipRest();
+        }
+    },1000);
+}
+
+function skipRest(){
+    clearInterval(restInterval);
+    document.getElementById('rest-box').classList.add('hidden');
+    exp+=15;
+    if(exp>=100){level++; exp=0;} 
+    localStorage.setItem('lvl', level); 
+    localStorage.setItem('exp', exp); 
+    updateUI();
+    currentIndex++;
+    startQuest();
+}
+
+function failQuest(){ 
+    clearInterval(timerInterval); 
+    document.getElementById('timer-box').classList.add('hidden'); 
+    document.getElementById('penalty-box').classList.remove('hidden'); 
+}
 function closePenalty(){ document.getElementById('penalty-box').classList.add('hidden'); startQuest(); }
-function toggleTime(){ let check = document.getElementById("customTimeCheck"); let div = document.getElementById("customTimeDiv"); if(check && div){ div.style.display = check.checked ? "block" : "none"; } }
 
 const subjectsByYear = {
-    // ثانوي عام
     "1 ثانوي": ["عربي", "انجليزي", "رياضة", "فيزياء", "كيمياء", "احياء", "تاريخ", "جغرافيا", "فلسفة", "دين"],
     "2 ثانوي علمي": ["عربي", "انجليزي", "رياضة", "فيزياء", "كيمياء", "احياء", "الماني/فرنساوي"],
     "2 ثانوي ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "علم نفس", "فلسفة", "الماني/فرنساوي"],
     "3 ثانوي علمي علوم": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "جيولوجيا"],
     "3 ثانوي علمي رياضة": ["عربي", "انجليزي", "فيزياء", "كيمياء", "رياضة بحتة", "تطبيقية"],
     "3 ثانوي ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "علم نفس", "فلسفة"],
-
-    // اعدادي وابتدائي عام
     "1 اعدادي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب"],
     "2 اعدادي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب"],
     "3 اعدادي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب"],
@@ -106,27 +166,14 @@ const subjectsByYear = {
     "4 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"],
     "5 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"],
     "6 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"],
-
-    // === الأزهر ===
     "1 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "قرآن كريم", "دين"],
-    "2 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "قرآن كريم", "دين"],
-    "3 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "قرآن كريم", "دين"],
-    "4 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "دين"],
-    "5 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "دين"],
     "6 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "دين"],
-
     "1 اعدادي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "تجويد", "أصول دين", "فقه", "نحو وصرف"],
-    "2 اعدادي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "تجويد", "أصول دين", "فقه", "نحو وصرف"],
     "3 اعدادي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "تجويد", "أصول دين", "فقه", "نحو وصرف"],
-
-    "1 ثانوي ازهر علمي": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "رياضة", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه"],
-    "2 ثانوي ازهر علمي": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "رياضة", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه"],
     "3 ثانوي ازهر علمي": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "رياضة بحتة", "تطبيقية", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه"],
-
-    "1 ثانوي ازهر ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "منطق", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه", "نحو", "صرف", "بلاغة"],
-    "2 ثانوي ازهر ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "منطق", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه", "نحو", "صرف", "بلاغة"],
     "3 ثانوي ازهر ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "فلسفة", "منطق", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه", "نحو", "صرف", "بلاغة", "ادب ونصوص"]
 };
+
 function selectYear(year){
     selectedYear = year;
     localStorage.setItem('selectedYear', year);
