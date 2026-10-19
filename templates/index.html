@@ -77,11 +77,18 @@
             <button onclick="changeYear()" style="background:transparent; border:1px solid #666; color:#666; font-size:10px; margin-top:10px;">تغيير السنة</button>
         </div>
 
-        <div style="margin: 15px 0;" id="custom-area">
-            <input type="checkbox" id="customTimeCheck" onchange="toggleTime()"> أنا هحدد الوقت بنفسي
+                <div style="margin: 15px 0;" id="custom-area">
+            <label><input type="checkbox" id="customTimeCheck"> أنا هحدد الوقت بنفسي</label>
             <div id="customTimeDiv" style="display:none; margin-top:10px;">
-              حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="60">
+              حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="مثال: 60" style="width:100px;">
             </div>
+        </div>
+
+        <div id="rest-box" class="hidden" style="border:1px solid #00ff88; padding:15px; margin:15px 0; background:#002211;">
+            <h3 style="color:#00ff88;">[REST TIME]</h3>
+            <p>عاش يا هنتر! خلصت بدري.</p>
+            <p>ريح دلوقتي: <span id="rest-timer">00:00</span></p>
+            <button onclick="skipRest()">ابدأ المهمة الجاية على طول</button>
         </div>
 
         <div id="quest-list"></div>

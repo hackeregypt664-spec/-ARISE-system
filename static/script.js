@@ -1,3 +1,13 @@
+// اظهار خانة تحديد الوقت
+document.addEventListener('DOMContentLoaded', ()=>{
+    const check = document.getElementById('customTimeCheck');
+    const div = document.getElementById('customTimeDiv');
+    if(check){
+        check.addEventListener('change', ()=>{
+            div.style.display = check.checked ? 'block' : 'none';
+        });
+    }
+});
 let quests = []; 
 let currentIndex = 0; 
 let timeLeft = 0; 
@@ -51,14 +61,23 @@ function startQuest(){
         document.getElementById('input-area').classList.remove('hidden'); return;
     }
     document.getElementById('timer-box').classList.remove('hidden');
+    document.getElementById('rest-box').classList.add('hidden');
     document.getElementById('current-task').innerText='مهمة: '+quests[currentIndex];
+    
+    // هنا بقى بياخد الوقت اللي انت محدده
     const customCheck = document.getElementById('customTimeCheck');
     const customInput = document.getElementById('customTime');
     let minutes = 25;
-    if(customCheck && customCheck.checked && customInput && customInput.value > 0){ minutes = parseInt(customInput.value); }
-    else { minutes = currentIndex === 0 ? 25 : 45; }
+    if(customCheck && customCheck.checked && customInput && customInput.value > 0){
+        minutes = parseInt(customInput.value);
+    } else {
+        minutes = currentIndex === 0 ? 25 : 45;
+    }
+    
     timeLeft = minutes * 60;
-    updateTimer(); clearInterval(timerInterval);
+    totalQuestTime = timeLeft; // نحفظ الوقت الأصلي عشان نحسب الراحة
+    updateTimer(); 
+    clearInterval(timerInterval);
     timerInterval=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0){failQuest();} },1000);
 }
 
