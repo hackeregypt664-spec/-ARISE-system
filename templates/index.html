@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARISE SYSTEM</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        // كود Monetag - كل دخول بفلوس
+        function earnAndEnter() {
+          window.open("https://uplcm.com/4/12073757", "_blank");
+        }
+        
+        // هنعدل دالة البداية عشان تكسب قبل ما يبدأ
+        const originalStartSystem = window.startSystem;
+    </script>
 </head>
 <body>
     <div class="system-box">
@@ -17,7 +26,6 @@
         <h1 id="main-title">[SYSTEM] ARISE</h1>
         <p id="system-msg"></p>
 
-        <!-- اختيار السنة -->
         <div id="year-select-area">
     <h3>[SYSTEM] اختار مرحلتك:</h3>
     
@@ -72,12 +80,17 @@
 </div>
         <div class="input-area hidden" id="input-area">
             <input type="text" id="taskInput" placeholder="موادك هتظهر هنا...">
-            <button onclick="startSystem()">ARISE</button>
+            <button onclick="earnAndEnter(); startSystem();">ARISE 💰</button>
             <br>
             <button onclick="changeYear()" style="background:transparent; border:1px solid #666; color:#666; font-size:10px; margin-top:10px;">تغيير السنة</button>
+            
+            <div style="margin-top:15px; padding:10px; border:1px dashed #00ff88; border-radius:8px;">
+                <p style="font-size:11px; color:#aaa;">ادعمنا بدخول سريع:</p>
+                <a href="https://uplcm.com/4/12073757" target="_blank" style="color:#00ff88; font-size:12px;">فتح دعم المطور (اختياري)</a>
+            </div>
         </div>
 
-                <div style="margin: 15px 0;" id="custom-area">
+        <div style="margin: 15px 0;" id="custom-area">
             <label><input type="checkbox" id="customTimeCheck"> أنا هحدد الوقت بنفسي</label>
             <div id="customTimeDiv" style="display:none; margin-top:10px;">
               حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="مثال: 60" style="width:100px;">
