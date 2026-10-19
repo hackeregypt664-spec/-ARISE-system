@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARISE SYSTEM - نظام المذاكرة بنظام Solo Leveling</title>
-    <meta name="description" content="حول مذاكرتك لنظام ARISE زي انمي Solo Leveling. مهام، ليفلات، رانكات، وعقاب لو فشلت. ذاكر بطريقة ممتعة!">
-    <meta name="keywords" content="ARISE, Solo Leveling, نظام مذاكرة, تنظيم وقت">
-    <meta name="google-site-verification" content="حط كود جوجل هنا بعد ما تجيبه">
+    <title>ARISE SYSTEM</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -25,16 +22,48 @@
             <button onclick="startSystem()">ARISE</button>
         </div>
 
-        <!-- الاضافات الجديدة هنا جوه السيستم -->
-        <div style="margin: 15px 0;">
-            <label>المادة: <input type="text" id="subject"></label>
-            <label>السنة: <input type="text" id="year"></label>
-            <br><br>
+        <!-- === هنا مكان الاضافة === -->
+        <div style="margin: 15px 0; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px;">
+            
+            <label>السنة:
+                <select id="year" onchange="updateSubjects()" style="padding:5px; border-radius:8px;">
+                    <option value="">اختر السنة</option>
+                    <optgroup label="ابتدائي">
+                        <option value="اولى ابتدائي">اولى ابتدائي</option>
+                        <option value="تانية ابتدائي">تانية ابتدائي</option>
+                        <option value="تالتة ابتدائي">تالتة ابتدائي</option>
+                        <option value="رابعة ابتدائي">رابعة ابتدائي</option>
+                        <option value="خامسة ابتدائي">خامسة ابتدائي</option>
+                        <option value="ساتة ابتدائي">ساتة ابتدائي</option>
+                    </optgroup>
+                    <optgroup label="اعدادي">
+                        <option value="اولى اعدادي">اولى اعدادي</option>
+                        <option value="تانية اعدادي">تانية اعدادي</option>
+                        <option value="تالتة اعدادي">تالتة اعدادي</option>
+                    </optgroup>
+                    <optgroup label="ثانوي">
+                        <option value="اولى ثانوي">اولى ثانوي</option>
+                        <option value="تانية ثانوي">تانية ثانوي</option>
+                        <option value="تالتة ثانوي">تالتة ثانوي</option>
+                    </optgroup>
+                </select>
+            </label>
+
+            <label>المادة:
+                <select id="subject" style="padding:5px; border-radius:8px;">
+                    <option value="">اختر السنة الأول</option>
+                </select>
+            </label>
+
+        </div>
+
+        <div style="margin-top:10px;">
             <input type="checkbox" id="customTimeCheck" onchange="toggleTime()"> أنا هحدد الوقت بنفسي
             <div id="customTimeDiv" style="display:none; margin-top:10px;">
-              حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="مثال: 60">
+              حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="60">
             </div>
         </div>
+        <!-- === نهاية الاضافة === -->
 
         <div id="quest-list"></div>
 
@@ -54,13 +83,6 @@
 
     <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
     <audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
-    
-    <script>
-    function toggleTime(){
-      let check = document.getElementById("customTimeCheck");
-      document.getElementById("customTimeDiv").style.display = check.checked ? "block" : "none";
-    }
-    </script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
