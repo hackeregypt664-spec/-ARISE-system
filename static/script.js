@@ -11,8 +11,6 @@ window.onload = () => {
     if(localStorage.getItem('selectedYear')){
         document.getElementById('year-select-area')?.classList.add('hidden');
         document.getElementById('input-area')?.classList.remove('hidden');
-        typeWriter("ارجعي كملي يا هنتر.", "system-msg");
-    } else {
         typeWriter("اختاري مرحلتك الدراسية الأول.", "system-msg"); 
     }
 }
