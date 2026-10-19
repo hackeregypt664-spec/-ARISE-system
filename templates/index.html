@@ -6,7 +6,7 @@
     <title>ARISE SYSTEM</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script>
-// كود الاعلان - مرة واحدة كل ساعة بس
+<!-- كود الاعلان - مرة واحدة كل ساعة بس -->
 function earnWithAd() {
   let lastAd = localStorage.getItem('lastAdTime');
   let now = Date.now();
@@ -18,28 +18,6 @@ function earnWithAd() {
   }
 }
 </script>
-
-<!-- الزرار الجديد -->
-<div id="input-area">
-  <input type="text" id="taskInput" placeholder="موادك هتظهر هنا...">
-  <button onclick="earnWithAd(); startSystem();" style="
-    background: linear-gradient(90deg, #00ff88, #00ccff);
-    color: black;
-    font-weight: bold;
-    font-size: 18px;
-    padding: 14px 28px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    width: 100%;
-    box-shadow: 0 0 15px #00ff88;
-  ">
-    ARISE SYSTEM 🚀
-  </button>
-  <p style="font-size:10px; color:#666; margin-top:8px; text-align:center;">
-    الدخول يدعم تطوير النظام (اعلان واحد كل ساعة)
-  </p>
-</div>
 </head>
 <body>
     <div class="system-box">
