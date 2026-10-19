@@ -1,12 +1,17 @@
-let quests = []; // هيبقى array of objects {name, time}
+let quests = []; 
 let currentIndex = 0; 
 let timeLeft = 0; 
 let timerInterval = null;
 let level = localStorage.getItem('lvl')? parseInt(localStorage.getItem('lvl')) : 1;
 let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0;
-let smartQuests = [];
 
-window.onload = () => { updateUI(); }
+window.onload = () => { updateUI(); typeWriter("ادخلي مهام اليوم، وسيقوم النظام بترتيبها.", "system-msg"); }
+
+function typeWriter(text, elementId, speed=40){
+    let i=0; document.getElementById(elementId).innerHTML="";
+    function typing(){ if(i<text.length){ document.getElementById(elementId).innerHTML+=text.charAt(i); i++; setTimeout(typing, speed);} }
+    typing();
+}
 
 function updateUI(){
     document.getElementById('level').innerText = `LVL ${level}`;
@@ -15,92 +20,65 @@ function updateUI(){
     document.getElementById('rank').innerText = ranks[Math.floor(level/5)] || "S-RANK";
 }
 
-// === النظام الذكي ===
-const subjectsByYear = {
-    "اولى ابتدائي": ["عربي","انجليزي","رياضة","دين"],
-    "تانية ابتدائي": ["عربي","انجليزي","رياضة","دين"],
-    "تالتة ابتدائي": ["عربي","انجليزي","رياضة","دين"],
-    "رابعة ابتدائي": ["عربي","انجليزي","رياضة","علوم","دراسات","دين"],
-    "خامسة ابتدائي": ["عربي","انجليزي","رياضة","علوم","دراسات","دين"],
-    "ساتة ابتدائي": ["عربي","انجليزي","رياضة","علوم","دراسات","دين"],
-    "اولى اعدادي": ["عربي","انجليزي","رياضة","علوم","دراسات","دين"],
-    "تانية اعدادي": ["عربي","انجليزي","رياضة","علوم","دراسات","دين"],
-    "تالتة اعدادي": ["عربي","انجليزي","رياضة","علوم","دراسات","دين"],
-    "اولى ثانوي": ["عربي","انجليزي","رياضة","فيزياء","كيمياء","احياء","تاريخ","جغرافيا","فلسفة"],
-    "تانية ثانوي": ["عربي","انجليزي","فيزياء","كيمياء","احياء","رياضة","تاريخ","جغرافيا"],
-    "تالتة ثانوي": ["عربي","انجليزي","فيزياء","كيمياء","احياء","تاريخ","جغرافيا","فلسفة"]
-};
-
-function updateSubjects(){
-    const year = document.getElementById('year').value;
-    const subjectSelect = document.getElementById('subject');
-    subjectSelect.innerHTML = '<option value="">اختر المادة</option>';
-    if(subjectsByYear[year]){
-        subjectsByYear[year].forEach(sub => {
-            let opt = document.createElement('option');
-            opt.value = sub; opt.textContent = sub;
-            subjectSelect.appendChild(opt);
-        });
-    }
-}
-
-function addSmartQuest(){
-    const sub = document.getElementById('subject').value;
-    const diff = document.getElementById('difficulty').value;
-    if(!sub) return alert("اختار المادة الأول!");
+// === ده المخ الـ AI اللي هيحدد الوقت ===
+function aiEstimateTime(subjectName){
+    let name = subjectName.toLowerCase();
     
-    let time = diff === 'easy' ? 25 : diff === 'medium' ? 45 : 60;
-    let diffText = diff === 'easy' ? 'سهل' : diff === 'medium' ? 'متوسط' : 'صعب';
+    // مواد صعبة جدا -> 60 دقيقة
+    const hard = ["فيزياء", "كيمياء", "احياء", "رياضة", "ماث", "math", "physics", "chemistry"];
+    // مواد متوسطة -> 45 دقيقة
+    const medium = ["انجليزي", "تاريخ", "جغرافيا", "فلسفة", "علم نفس", "english"];
+    // مواد سهلة -> 25 دقيقة
+    const easy = ["عربي", "دين", "دراسات", "علوم"];
+
+    if(hard.some(h => name.includes(h))) return {time: 60, level: "صعب 🔥", color: "#ff4444"};
+    if(medium.some(m => name.includes(m))) return {time: 45, level: "متوسط 😐", color: "#ffaa00"};
+    if(easy.some(e => name.includes(e))) return {time: 25, level: "سهل 😴", color: "#00ff88"};
     
-    smartQuests.push({name: sub, difficulty: diff, time: time, diffText: diffText});
-    renderSmartList();
+    // لو مش عارفها -> متوسط
+    return {time: 45, level: "متوسط 😐", color: "#ffaa00"};
 }
 
-function renderSmartList(){
-    const list = document.getElementById('smart-list');
-    list.innerHTML = '';
-    // ترتيب حسب الصعوبة: الصعب الأول
-    let sorted = [...smartQuests].sort((a,b) => b.time - a.time);
-    sorted.forEach((q,i) => {
-        list.innerHTML += `<div style="background:rgba(255,255,255,0.1); padding:8px; margin:5px 0; border-radius:5px; display:flex; justify-content:space-between;">
-            <span>${i+1}. ${q.name} - ${q.diffText} (${q.time}د)</span>
-            <span onclick="removeQuest(${smartQuests.indexOf(q)})" style="cursor:pointer; color:red;">❌</span>
-        </div>`;
-    });
-}
-
-function removeQuest(index){ smartQuests.splice(index,1); renderSmartList(); }
-
-function startSmartSystem(){
-    if(smartQuests.length === 0) return alert("ضيف مادة واحدة على الأقل!");
+function startSystem(){
+    const input=document.getElementById('taskInput').value;
+    if(!input.trim()) return;
     document.getElementById('arise-sound').play().catch(()=>{});
-    // رتبهم: الصعب الأول
-    quests = [...smartQuests].sort((a,b) => b.time - a.time);
-    
-    let totalTime = quests.reduce((sum,q)=> sum+q.time, 0);
-    document.getElementById('system-msg').innerText = `[SYSTEM] تم إنشاء خطة ذكية: ${quests.length} مواد، إجمالي ${totalTime} دقيقة. نبدأ بالأصعب!`;
+
+    // هنا الـ AI بيحلل كل مادة
+    let rawTasks = input.split(',').map(t=>t.trim()).filter(t=>t);
+    quests = rawTasks.map(name => {
+        let ai = aiEstimateTime(name);
+        return { name: name, time: ai.time, level: ai.level, color: ai.color };
+    });
+
+    // رتبهم: الصعب الأول (نظام Solo Leveling)
+    quests.sort((a,b) => b.time - a.time);
+
+    let total = quests.reduce((s,q)=>s+q.time, 0);
+    typeWriter(`[SYSTEM] الـ AI حلل ${quests.length} مهمة. إجمالي ${total} دقيقة. هنبدأ بالأصعب!`, "system-msg");
     
     let list=document.getElementById('quest-list'); list.innerHTML='';
-    quests.forEach((q,i)=>{list.innerHTML+=`<div class="quest">[Quest ${i+1}] ${q.name} [${q.diffText}] - ${q.time}د</div>`;});
+    quests.forEach((q,i)=>{
+        list.innerHTML+=`<div class="quest" style="border-left: 4px solid ${q.color}">[Quest ${i+1}] ${q.name} - ${q.level} (${q.time}د)</div>`;
+    });
     
-    document.getElementById('smart-setup').classList.add('hidden');
+    document.getElementById('input-area').classList.add('hidden');
     currentIndex=0; startQuest();
 }
 
 function startQuest(){
     if(currentIndex>=quests.length){
-        exp+=25; if(exp>=100){level++; exp=0;}
+        exp+=25; if(exp>=100){level++; exp=0; typeWriter(`[SYSTEM] LEVEL UP! انتي الآن LVL ${level}`, "system-msg");}
+        else{typeWriter(`[SYSTEM] كل المهام اكتملت! +25 EXP`, "system-msg");}
         localStorage.setItem('lvl', level); localStorage.setItem('exp', exp); updateUI();
         document.getElementById('timer-box').classList.add('hidden');
-        document.getElementById('smart-setup').classList.remove('hidden');
-        document.getElementById('system-msg').innerText = `[SYSTEM] عاش! خلصت كل الخطة! +25 EXP`;
-        smartQuests = []; renderSmartList(); document.getElementById('quest-list').innerHTML='';
+        document.getElementById('input-area').classList.remove('hidden');
+        document.getElementById('quest-list').innerHTML='';
         return;
     }
     document.getElementById('timer-box').classList.remove('hidden');
-    document.getElementById('current-task').innerText = `مهمة: ${quests[currentIndex].name} [${quests[currentIndex].diffText}]`;
-    document.getElementById('time-info').innerText = `وقت المهمة: ${quests[currentIndex].time} دقيقة`;
-    timeLeft = quests[currentIndex].time * 60;
+    document.getElementById('current-task').innerText=`مهمة: ${quests[currentIndex].name} [${quests[currentIndex].level}]`;
+    timeLeft = quests[currentIndex].time * 60; // الوقت بقى من الـ AI
     updateTimer(); clearInterval(timerInterval);
     timerInterval=setInterval(()=>{timeLeft--;updateTimer();if(timeLeft<=0){failQuest();}},1000);
 }
