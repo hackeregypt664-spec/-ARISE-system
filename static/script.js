@@ -7,15 +7,23 @@ let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0
 
 window.onload = () => { 
     updateUI(); 
-    typeWriter("ادخلي مهام اليوم، وسيقوم النظام بترتيبها.", "system-msg"); 
+    if(localStorage.getItem('selectedYear')){
+        document.getElementById('year-select-area')?.classList.add('hidden');
+        document.getElementById('input-area')?.classList.remove('hidden');
+        typeWriter("ارجعي كملي مهامك يا هنتر.", "system-msg");
+    } else {
+        typeWriter("اختاري السنة الدراسية الأول.", "system-msg"); 
+    }
 }
 
 function typeWriter(text, elementId, speed=40){
     let i=0; 
-    document.getElementById(elementId).innerHTML="";
+    let el = document.getElementById(elementId);
+    if(!el) return;
+    el.innerHTML="";
     function typing(){ 
         if(i<text.length){ 
-            document.getElementById(elementId).innerHTML+=text.charAt(i); 
+            el.innerHTML+=text.charAt(i); 
             i++; 
             setTimeout(typing, speed);
         } 
@@ -27,13 +35,14 @@ function updateUI(){
     document.getElementById('level').innerText = `LVL ${level}`;
     document.getElementById('exp-fill').style.width = `${exp}%`;
     let ranks = ["E-RANK","D-RANK","C-RANK","B-RANK","A-RANK","S-RANK"];
-    document.getElementById('rank').innerText = ranks[Math.floor(level/5)] || "S-RANK";
+    let rankEl = document.getElementById('rank');
+    if(rankEl) rankEl.innerText = ranks[Math.floor(level/5)] || "S-RANK";
 }
 
 function startSystem(){
     const input=document.getElementById('taskInput').value;
     if(!input.trim()) return;
-    document.getElementById('arise-sound').play().catch(()=>{});
+    document.getElementById('arise-sound')?.play().catch(()=>{});
     quests=input.split(',').map(t=>t.trim()).filter(t=>t);
     typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة. ابدأي.`, "system-msg");
     let list=document.getElementById('quest-list'); 
@@ -66,7 +75,6 @@ function startQuest(){
     document.getElementById('timer-box').classList.remove('hidden');
     document.getElementById('current-task').innerText='مهمة: '+quests[currentIndex];
     
-    // التعديل هنا
     const customCheck = document.getElementById('customTimeCheck');
     const customInput = document.getElementById('customTime');
     let minutes = 25;
@@ -101,7 +109,7 @@ function completeQuest(){
     localStorage.setItem('lvl', level); 
     localStorage.setItem('exp', exp); 
     updateUI(); 
-    document.getElementById('alarm').play().catch(()=>{}); 
+    document.getElementById('alarm')?.play().catch(()=>{}); 
     currentIndex++; 
     startQuest(); 
 }
@@ -123,4 +131,56 @@ function toggleTime(){
   if(check && div){
       div.style.display = check.checked ? "block" : "none";
   }
+}
+
+// === نظام السنوات الدراسية ===
+const subjectsByYear = {
+    "1 ثانوي": ["عربي", "انجليزي", "رياضة", "فيزياء", "كيمياء", "احياء", "تاريخ", "جغرافيا", "فلسفة"],
+    "2 ثانوي علمي": ["عربي", "انجليزي", "رياضة", "فيزياء", "كيمياء", "احياء", "الماني/فرنساوي"],
+    "2 ثانوي ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "علم نفس", "فلسفة", "الماني/فرنساوي"],
+    "3 ثانوي علمي علوم": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "جيولوجيا", "الماني/فرنساوي"],
+    "3 ثانوي علمي رياضة": ["عربي", "انجليزي", "فيزياء", "كيمياء", "رياضة بحتة", "رياضة تطبيقية", "الماني/فرنساوي"],
+    "3 ثانوي ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "علم نفس", "فلسفة", "الماني/فرنساوي"]
+};
+
+let selectedYear = localStorage.getItem('selectedYear') || "";
+
+function selectYear(year){
+    selectedYear = year;
+    localStorage.setItem('selectedYear', year);
+    showSubjects(year);
+}
+
+function showSubjects(year){
+    const container = document.getElementById('subjects-container');
+    if(!container) return;
+    container.innerHTML = `<h3>مواد ${year}:</h3>`;
+    subjectsByYear[year].forEach(sub => {
+        container.innerHTML += `
+        <label class="subject-check">
+            <input type="checkbox" value="${sub}" class="subjectBox"> ${sub}
+        </label>`;
+    });
+    container.innerHTML += `<button onclick="confirmSubjects()">تأكيد المواد</button>`;
+}
+
+function confirmSubjects(){
+    const checked = document.querySelectorAll('.subjectBox:checked');
+    let selected = Array.from(checked).map(c => c.value);
+    if(selected.length === 0){ alert("اختار مادة واحدة على الأقل"); return; }
+    
+    localStorage.setItem('mySubjects', JSON.stringify(selected));
+    document.getElementById('year-select-area').classList.add('hidden');
+    document.getElementById('input-area').classList.remove('hidden');
+    
+    document.getElementById('taskInput').value = selected.join(', ');
+    typeWriter(`تمام! اخترت مواد ${selectedYear}. عدلي عليهم لو عايزة.`, "system-msg");
+}
+
+function changeYear(){
+    localStorage.removeItem('selectedYear');
+    localStorage.removeItem('mySubjects');
+    document.getElementById('year-select-area').classList.remove('hidden');
+    document.getElementById('input-area').classList.add('hidden');
+    document.getElementById('quest-list').innerHTML = '';
 }

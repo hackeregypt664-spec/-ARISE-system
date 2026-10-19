@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARISE SYSTEM - نظام المذاكرة بنظام Solo Leveling</title>
     <meta name="description" content="حول مذاكرتك لنظام ARISE زي انمي Solo Leveling. مهام، ليفلات، رانكات، وعقاب لو فشلت. ذاكر بطريقة ممتعة!">
-    <meta name="keywords" content="ARISE, Solo Leveling, نظام مذاكرة, تنظيم وقت">
-    <meta name="google-site-verification" content="حط كود جوجل هنا بعد ما تجيبه">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -20,16 +18,28 @@
         <h1 id="main-title">[SYSTEM] ARISE</h1>
         <p id="system-msg"></p>
 
-        <div class="input-area" id="input-area">
+        <!-- === اختيار السنة === -->
+        <div id="year-select-area">
+            <h3>اختار سنتك الدراسية:</h3>
+            <div class="year-buttons">
+                <button onclick="selectYear('1 ثانوي')">1 ثانوي</button>
+                <button onclick="selectYear('2 ثانوي علمي')">2 ثانوي علمي</button>
+                <button onclick="selectYear('2 ثانوي ادبي')">2 ثانوي ادبي</button>
+                <button onclick="selectYear('3 ثانوي علمي علوم')">3 علمي علوم</button>
+                <button onclick="selectYear('3 ثانوي علمي رياضة')">3 علمي رياضة</button>
+                <button onclick="selectYear('3 ثانوي ادبي')">3 ادبي</button>
+            </div>
+            <div id="subjects-container"></div>
+            <button onclick="changeYear()" style="margin-top:10px; background:transparent; border:1px solid #666;">تغيير السنة</button>
+        </div>
+
+        <div class="input-area hidden" id="input-area">
             <input type="text" id="taskInput" placeholder="مثال: عربي, ماث, انجليزي">
             <button onclick="startSystem()">ARISE</button>
         </div>
 
-        <!-- الاضافات الجديدة هنا جوه السيستم -->
-        <div style="margin: 15px 0;">
-            <label>المادة: <input type="text" id="subject"></label>
-            <label>السنة: <input type="text" id="year"></label>
-            <br><br>
+        <!-- الاضافات -->
+        <div style="margin: 15px 0;" id="custom-area">
             <input type="checkbox" id="customTimeCheck" onchange="toggleTime()"> أنا هحدد الوقت بنفسي
             <div id="customTimeDiv" style="display:none; margin-top:10px;">
               حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="مثال: 60">
@@ -55,12 +65,6 @@
     <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
     <audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
     
-    <script>
-    function toggleTime(){
-      let check = document.getElementById("customTimeCheck");
-      document.getElementById("customTimeDiv").style.display = check.checked ? "block" : "none";
-    }
-    </script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
