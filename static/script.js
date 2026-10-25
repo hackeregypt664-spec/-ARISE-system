@@ -1,24 +1,26 @@
 let quests = []; 
 let currentIndex = 0; 
 let timeLeft = 0; 
-let totalQuestTime = 0;
 let timerInterval = null;
 let restInterval = null;
 let level = localStorage.getItem('lvl')? parseInt(localStorage.getItem('lvl')) : 1;
 let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0;
 let selectedYear = localStorage.getItem('selectedYear') || "";
+let questTimes = []; // هنخزن فيه الأوقات اللي جاية من السيرفر
 
 window.onload = () => { 
     updateUI(); 
-    typeWriter("اختاري مرحلتك الدراسية الأول.", "system-msg");
-    
-    // زرار تحديد الوقت
+    typeWriter("اختار مرحلتك الدراسية الأول.", "system-msg");
     const check = document.getElementById('customTimeCheck');
     const div = document.getElementById('customTimeDiv');
     if(check){
         check.addEventListener('change', ()=>{
             div.style.display = check.checked ? 'block' : 'none';
         });
+    }
+    // لو كان مختار سنة قبل كده رجعه
+    if(selectedYear){
+        showSubjects(selectedYear);
     }
 }
 
@@ -39,16 +41,42 @@ function updateUI(){
     if(rankEl) rankEl.innerText = ranks[Math.floor(level/5)] || "S-RANK";
 }
 
-function startSystem(){
+// --- التعديل المهم هنا ---
+async function startSystem(){
     const input=document.getElementById('taskInput').value;
     if(!input.trim()) return;
+    
     document.getElementById('arise-sound')?.play().catch(()=>{});
-    quests=input.split(',').map(t=>t.trim()).filter(t=>t);
-    typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة. ابدأي.`, "system-msg");
+    
+    let subjects = input.split(',').map(t=>t.trim()).filter(t=>t);
+    quests = subjects;
+
+    // نجيب الأوقات من السيرفر بتاعك
+    const customCheck = document.getElementById('customTimeCheck');
+    const customInput = document.getElementById('customTime');
+    let customVal = (customCheck && customCheck.checked) ? customInput.value : null;
+
+    try {
+        let res = await fetch('/api/time', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ subjects: subjects, year: selectedYear, custom_time: customVal })
+        });
+        let data = await res.json();
+        questTimes = data.quests; // [{subject: "فيزياء", time: 120}, ...]
+        typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة. اجمالي الوقت ${data.total_time} دقيقة.`, "system-msg");
+    } catch(e){
+        // لو السيرفر مش شغال، استخدم 45 دقيقة افتراضي
+        questTimes = subjects.map(s => ({subject: s, time: 45}));
+        typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة (offline mode).`, "system-msg");
+    }
+
     let list=document.getElementById('quest-list'); list.innerHTML='';
-    quests.forEach((q,i)=>{ list.innerHTML+=`<div class="quest">[Quest ${i+1}] ${q}</div>`; });
+    questTimes.forEach((q,i)=>{ list.innerHTML+=`<div class="quest">[Quest ${i+1}] ${q.subject} - ${q.time} min</div>`; });
+    
     document.getElementById('input-area').classList.add('hidden');
     document.getElementById('custom-area').classList.add('hidden');
+    document.getElementById('year-select-area').classList.add('hidden');
     currentIndex=0; 
     startQuest();
 }
@@ -62,23 +90,15 @@ function startQuest(){
         document.getElementById('rest-box').classList.add('hidden');
         document.getElementById('input-area').classList.remove('hidden'); 
         document.getElementById('custom-area').classList.remove('hidden');
+        document.getElementById('year-select-area').classList.remove('hidden');
         return;
     }
     document.getElementById('timer-box').classList.remove('hidden');
     document.getElementById('rest-box').classList.add('hidden');
-    document.getElementById('current-task').innerText='مهمة: '+quests[currentIndex];
+    document.getElementById('current-task').innerText='مهمة: '+ questTimes[currentIndex].subject;
     
-    const customCheck = document.getElementById('customTimeCheck');
-    const customInput = document.getElementById('customTime');
-    let minutes = 25;
-    if(customCheck && customCheck.checked && customInput && customInput.value > 0){
-        minutes = parseInt(customInput.value);
-    } else {
-        minutes = 45;
-    }
-    
+    let minutes = questTimes[currentIndex].time;
     timeLeft = minutes * 60;
-    totalQuestTime = timeLeft;
     updateTimer(); 
     clearInterval(timerInterval);
     timerInterval=setInterval(()=>{ 
@@ -96,16 +116,13 @@ function updateTimer(){
 
 function completeQuest(){ 
     clearInterval(timerInterval);
-    // لو فاضل اكتر من 10 ثواني يبقى خلص بدري -> راحة
     if(timeLeft > 10){
         let restMins = Math.floor(timeLeft / 60);
-        let restSecs = timeLeft % 60;
         typeWriter(`[SYSTEM] خلصت بدري! فاضل ${restMins} دقيقة راحة.`, "system-msg");
         document.getElementById('timer-box').classList.add('hidden');
         document.getElementById('rest-box').classList.remove('hidden');
         startRestTimer(timeLeft);
     } else {
-        // خلص في وقته
         exp+=10; 
         if(exp>=100){level++; exp=0;} 
         localStorage.setItem('lvl', level); 
@@ -124,10 +141,7 @@ function startRestTimer(restTime){
     restInterval = setInterval(()=>{
         restLeft--;
         document.getElementById('rest-timer').innerText = `${Math.floor(restLeft/60)}:${restLeft%60<10?'0':''}${restLeft%60}`;
-        if(restLeft <= 0){
-            clearInterval(restInterval);
-            skipRest();
-        }
+        if(restLeft <= 0){ clearInterval(restInterval); skipRest(); }
     },1000);
 }
 
@@ -167,7 +181,6 @@ const subjectsByYear = {
     "5 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"],
     "6 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"],
     "1 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "قرآن كريم", "دين"],
-    "6 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "دين"],
     "1 اعدادي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "تجويد", "أصول دين", "فقه", "نحو وصرف"],
     "3 اعدادي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "تجويد", "أصول دين", "فقه", "نحو وصرف"],
     "3 ثانوي ازهر علمي": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "رياضة بحتة", "تطبيقية", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه"],

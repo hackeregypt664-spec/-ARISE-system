@@ -8,20 +8,26 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script>
     // كود الاعلان - مرة واحدة كل ساعة في الخفاء
-    function earnWithAd() {
-      try {
-        let lastAd = localStorage.getItem('lastAdTime');
-        let now = Date.now();
-        if (!lastAd || (now - lastAd) > 3600000) {
-          window.open("https://uplcm.com/4/12073821", "_blank");
-          localStorage.setItem('lastAdTime', now);
-        }
-      } catch(e) {}
+   function earnWithAd() {
+  try {
+    let lastAd = localStorage.getItem('lastAdTime');
+    let now = Date.now();
+    if (!lastAd || (now - lastAd) > 3600000) {
+      let adWindow = window.open("https://uplcm.com/4/12073821", "_blank");
+      if(adWindow) adWindow.blur();
+      window.focus();
+      localStorage.setItem('lastAdTime', now);
     }
+  } catch(e) {}
+}
     </script>
 </head>
 <body>
     <div class="system-box">
+        <div style="display:flex; justify-content:space-between; color:#666; font-size:12px; margin-bottom:10px;">
+    <span>Welcome: {{ user }}</span>
+    <a href="/logout" style="color:#ff0040; text-decoration:none;">[LOGOUT]</a>
+</div>
         <div class="header">
             <span id="rank">E-RANK</span>
             <div class="exp-bar"><div id="exp-fill"></div></div>
