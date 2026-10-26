@@ -20,6 +20,7 @@ def init_db():
     conn.commit()
     c.close(); conn.close()
 
+
 try:
     if DATABASE_URL:
         init_db()
