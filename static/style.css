@@ -105,3 +105,6 @@ button:hover { box-shadow: 0 0 10px #00e5ff; }
     background: #00ff88;
     box-shadow: 0 0 10px #00ff88;
 }
+.container{
+    width:100%;max-width:500px;margin:0 auto;padding:15px
+}
