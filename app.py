@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-import os, psycopg2 , traceback
-
+import os
+import psycopg2
 app = Flask(__name__)
 app.secret_key = 'monarch_secret_key_123'
 DATABASE_URL = os.environ.get('DATABASE_URL')
