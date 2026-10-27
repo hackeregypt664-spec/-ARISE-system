@@ -11,8 +11,14 @@ app.secret_key = os.environ.get("SECRET_KEY", "monarch-secret-123")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db_connection():
+    if not DATABASE_URL:
+        return None
     try:
-        conn = psycopg2.connect(DATABASE_URL)
+        # لازم نزود sslmode عشان Supabase
+        url = DATABASE_URL
+        if "?sslmode" not in url:
+            url += "?sslmode=require"
+        conn = psycopg2.connect(url)
         return conn
     except Exception as e:
         print(f"DB Error: {e}")
@@ -44,6 +50,23 @@ def home():
         return redirect('/login')
     return render_template('index.html', user=session['user'])
 
+@app.route('/debug')
+def debug():
+    db = os.environ.get("DATABASE_URL")
+    if not db:
+        return "ENV VAR مش موجودة في Vercel لسه ❌ روح Settings > Environment Variables"
+    
+    # نجرب الاتصال ونطلع الخطأ الحقيقي
+    try:
+        url = db
+        if "?sslmode" not in url:
+            url += "?sslmode=require"
+        conn = psycopg2.connect(url)
+        conn.close()
+        return f"ENV موجودة ✅ والاتصال نجح! اولها: {db[:35]}..."
+    except Exception as e:
+        return f"ENV موجودة بس الاتصال فشل ❌ الخطأ هو: {str(e)}"
+
 @app.route('/register', methods=['GET','POST'])
 def register():
     if request.method == 'POST':
@@ -52,7 +75,6 @@ def register():
         conn = get_db_connection()
         if conn is None:
             return "Database connection failed, check ENV vars", 500
-        
         c = conn.cursor()
         try:
             c.execute("INSERT INTO users (email,password) VALUES (%s,%s)", (email,pwd))
@@ -74,16 +96,13 @@ def login():
         conn = get_db_connection()
         if conn is None:
             return "Database connection failed, check ENV vars", 500
-            
         c = conn.cursor()
         c.execute("SELECT password FROM users WHERE email=%s", (email,))
         row = c.fetchone()
         c.close()
         conn.close()
-        
         if row and check_password_hash(row[0], password):
             session['user']=email
-            # log
             try:
                 conn = get_db_connection()
                 if conn:
