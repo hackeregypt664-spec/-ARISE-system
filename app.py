@@ -115,6 +115,27 @@ def login():
         return render_template('login.html', error="الايميل او الباسورد غلط")
     return render_template('login.html')
 
+# === الـ API الجديد اللي بيصلح مشكلة الـ 45 دقيقة ===
+@app.route('/api/time', methods=['POST'])
+def api_time():
+    data = request.get_json()
+    if not data:
+        return {"quests": [], "total_time": 0}
+    subjects = data.get('subjects', [])
+    custom_time = data.get('custom_time')
+
+    try:
+        time_per = int(custom_time) if custom_time is not None else 45
+    except:
+        time_per = 45
+    
+    if time_per <= 0 or time_per > 300:
+        time_per = 45
+
+    quests = [{"subject": s, "time": time_per} for s in subjects]
+    total = len(quests) * time_per
+    return {"quests": quests, "total_time": total}
+
 @app.route('/admin/logs')
 def admin_logs():
     if 'user' not in session: return redirect('/login')

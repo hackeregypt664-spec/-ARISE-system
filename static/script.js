@@ -6,7 +6,7 @@ let restInterval = null;
 let level = localStorage.getItem('lvl')? parseInt(localStorage.getItem('lvl')) : 1;
 let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0;
 let selectedYear = localStorage.getItem('selectedYear') || "";
-let questTimes = []; // هنخزن فيه الأوقات اللي جاية من السيرفر
+let questTimes = [];
 
 window.onload = () => { 
     updateUI(); 
@@ -18,7 +18,6 @@ window.onload = () => {
             div.style.display = check.checked ? 'block' : 'none';
         });
     }
-    // لو كان مختار سنة قبل كده رجعه
     if(selectedYear){
         showSubjects(selectedYear);
     }
@@ -41,7 +40,6 @@ function updateUI(){
     if(rankEl) rankEl.innerText = ranks[Math.floor(level/5)] || "S-RANK";
 }
 
-// --- التعديل المهم هنا ---
 async function startSystem(){
     const input=document.getElementById('taskInput').value;
     if(!input.trim()) return;
@@ -51,10 +49,18 @@ async function startSystem(){
     let subjects = input.split(',').map(t=>t.trim()).filter(t=>t);
     quests = subjects;
 
-    // نجيب الأوقات من السيرفر بتاعك
     const customCheck = document.getElementById('customTimeCheck');
     const customInput = document.getElementById('customTime');
-    let customVal = (customCheck && customCheck.checked) ? customInput.value : null;
+    let customVal = null;
+    if(customCheck && customCheck.checked){
+        let v = parseInt(customInput.value);
+        if(!isNaN(v) && v > 0 && v <= 300){
+            customVal = v;
+        } else {
+            alert("حط وقت صحيح من 1 لـ 300 دقيقة");
+            return;
+        }
+    }
 
     try {
         let res = await fetch('/api/time', {
@@ -63,12 +69,12 @@ async function startSystem(){
             body: JSON.stringify({ subjects: subjects, year: selectedYear, custom_time: customVal })
         });
         let data = await res.json();
-        questTimes = data.quests; // [{subject: "فيزياء", time: 120}, ...]
+        questTimes = data.quests;
         typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة. اجمالي الوقت ${data.total_time} دقيقة.`, "system-msg");
     } catch(e){
-        // لو السيرفر مش شغال، استخدم 45 دقيقة افتراضي
-        questTimes = subjects.map(s => ({subject: s, time: 45}));
-        typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة (offline mode).`, "system-msg");
+        let fallbackTime = customVal || 45;
+        questTimes = subjects.map(s => ({subject: s, time: fallbackTime}));
+        typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة (offline - ${fallbackTime} دقيقة).`, "system-msg");
     }
 
     let list=document.getElementById('quest-list'); list.innerHTML='';
@@ -82,6 +88,8 @@ async function startSystem(){
 }
 
 function startQuest(){
+    clearInterval(timerInterval);
+    clearInterval(restInterval);
     if(currentIndex>=quests.length){
         exp+=25; if(exp>=100){ level++; exp=0; typeWriter(`[SYSTEM] LEVEL UP! LVL ${level}`, "system-msg");} 
         else { typeWriter(`[SYSTEM] كل المهام اكتملت! +25 EXP`, "system-msg"); }
@@ -100,7 +108,6 @@ function startQuest(){
     let minutes = questTimes[currentIndex].time;
     timeLeft = minutes * 60;
     updateTimer(); 
-    clearInterval(timerInterval);
     timerInterval=setInterval(()=>{ 
         timeLeft--; 
         updateTimer(); 
