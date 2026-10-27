@@ -124,11 +124,16 @@ def admin_logs():
     conn = get_db_connection()
     if not conn: return "DB not connected", 500
     c = conn.cursor()
+    c.execute("SELECT email FROM users ORDER BY email")
+    users = c.fetchall()
     c.execute("SELECT email, action, time, ip FROM logs ORDER BY id DESC LIMIT 100")
     logs = c.fetchall()
     c.close()
     conn.close()
-    html = "<body style='background:#000;color:#00e5ff;font-family:monospace;padding:20px'><h1>MONARCH LOGS 👁️</h1><a href='/' style='color:#ff0040'>[BACK]</a><hr>"
+    html = f"<body style='background:#000;color:#00e5ff;font-family:monospace;padding:20px'><h1>👑 CONTROL PANEL - {len(users)} USERS 👑</h1><a href='/' style='color:#00ff88'>[BACK]</a><hr><h2>📋 الناس المسجلة:</h2>"
+    for u in users:
+        html+= f"<p>👤 {u[0]}</p>"
+    html+="<hr><h2>👁️ الحركات:</h2>"
     for l in logs: 
         html+= f"<p>{l[2]} - {l[0]} - {l[1]} - {l[3]}</p>"
     return html + "</body>"
