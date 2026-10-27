@@ -1,148 +1,125 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="monetag" content="2502b7fb65ef9198047978f761c190a8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARISE SYSTEM</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script>
-    // كود الاعلان - مرة واحدة كل ساعة في الخفاء
-   function earnWithAd() {
-  try {
-    let lastAd = localStorage.getItem('lastAdTime');
-    let now = Date.now();
-    if (!lastAd || (now - lastAd) > 3600000) {
-      let adWindow = window.open("https://uplcm.com/4/12073821", "_blank");
-      if(adWindow) adWindow.blur();
-      window.focus();
-      localStorage.setItem('lastAdTime', now);
-    }
-  } catch(e) {}
-}
- </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="monetag" content="2502b7fb65ef9198047978f761c190a8">
+<title>ARISE SYSTEM</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="system-box">
-        <div style="display:flex; justify-content:space-between; color:#666; font-size:12px; margin-bottom:10px;">
+<div class="system-box">
+  <div style="display:flex; justify-content:space-between; color:#666; font-size:12px; margin-bottom:10px;">
     <span>Welcome: {{ user }}</span>
     <a href="/logout" style="color:#ff0040; text-decoration:none;">[LOGOUT]</a>
-</div>
-        <div class="header">
-            <span id="rank">E-RANK</span>
-            <div class="exp-bar"><div id="exp-fill"></div></div>
-            <span id="level">LVL 1</span>
-        </div>
+  </div>
 
-        <h1 id="main-title">[SYSTEM] ARISE</h1>
-        <p id="system-msg"></p>
+  <div class="header">
+    <span id="rank">E-RANK</span>
+    <div class="exp-bar"><div id="exp-fill"></div></div>
+    <span id="level">LVL 1</span>
+  </div>
 
-        <div id="year-select-area">
+  <h1 id="main-title">[SYSTEM] ARISE</h1>
+  <p id="system-msg"></p>
+
+  <div id="year-select-area">
     <h3>[SYSTEM] اختار مرحلتك:</h3>
     
     <div>
-        <h4 style="color:#00ff88;">-- ثانوي عام --</h4>
-        <div class="year-buttons">
-            <button onclick="selectYear('1 ثانوي')">1 ثانوي</button>
-            <button onclick="selectYear('2 ثانوي علمي')">2 علمي</button>
-            <button onclick="selectYear('2 ثانوي ادبي')">2 ادبي</button>
-            <button onclick="selectYear('3 ثانوي علمي علوم')">3 علوم</button>
-            <button onclick="selectYear('3 ثانوي علمي رياضة')">3 رياضة</button>
-            <button onclick="selectYear('3 ثانوي ادبي')">3 ادبي</button>
-        </div>
+      <h4 style="color:#00ff88;">-- ثانوي عام --</h4>
+      <div class="year-buttons">
+        <button onclick="selectYear('1 ثانوي')">1 ثانوي</button>
+        <button onclick="selectYear('2 ثانوي علمي')">2 علمي</button>
+        <button onclick="selectYear('2 ثانوي ادبي')">2 ادبي</button>
+        <button onclick="selectYear('3 ثانوي علمي علوم')">3 علوم</button>
+        <button onclick="selectYear('3 ثانوي علمي رياضة')">3 رياضة</button>
+        <button onclick="selectYear('3 ثانوي ادبي')">3 ادبي</button>
+      </div>
     </div>
 
     <div>
-        <h4 style="color:#00e5ff; text-shadow:0 0 10px #00e5ff;">-- أزهر --</h4>
-        <div class="year-buttons">
-            <button onclick="selectYear('1 ابتدائي ازهر')">ابتدائي ازهر</button>
-            <button onclick="selectYear('1 اعدادي ازهر')">1 اعدادي ازهر</button>
-            <button onclick="selectYear('2 اعدادي ازهر')">2 اعدادي ازهر</button>
-            <button onclick="selectYear('3 اعدادي ازهر')">3 اعدادي ازهر</button>
-            <button onclick="selectYear('1 ثانوي ازهر علمي')">1 ث ازهر علمي</button>
-            <button onclick="selectYear('1 ثانوي ازهر ادبي')">1 ث ازهر ادبي</button>
-            <button onclick="selectYear('3 ثانوي ازهر علمي')">3 ث ازهر علمي</button>
-            <button onclick="selectYear('3 ثانوي ازهر ادبي')">3 ث ازهر ادبي</button>
-        </div>
+      <h4 style="color:#00e5ff;">-- أزهر --</h4>
+      <div class="year-buttons">
+        <button onclick="selectYear('1 ابتدائي ازهر')">ابتدائي ازهر</button>
+        <button onclick="selectYear('1 اعدادي ازهر')">1 اعدادي ازهر</button>
+        <button onclick="selectYear('2 اعدادي ازهر')">2 اعدادي ازهر</button>
+        <button onclick="selectYear('3 اعدادي ازهر')">3 اعدادي ازهر</button>
+        <button onclick="selectYear('1 ثانوي ازهر علمي')">1 ث ازهر علمي</button>
+        <button onclick="selectYear('1 ثانوي ازهر ادبي')">1 ث ازهر ادبي</button>
+        <button onclick="selectYear('3 ثانوي ازهر علمي')">3 ث ازهر علمي</button>
+        <button onclick="selectYear('3 ثانوي ازهر ادبي')">3 ث ازهر ادبي</button>
+      </div>
     </div>
 
     <div>
-        <h4 style="color:#ffaa00;">-- اعدادي عام --</h4>
-        <div class="year-buttons">
-            <button onclick="selectYear('1 اعدادي')">1 اعدادي</button>
-            <button onclick="selectYear('2 اعدادي')">2 اعدادي</button>
-            <button onclick="selectYear('3 اعدادي')">3 اعدادي</button>
-        </div>
+      <h4 style="color:#ffaa00;">-- اعدادي عام --</h4>
+      <div class="year-buttons">
+        <button onclick="selectYear('1 اعدادي')">1 اعدادي</button>
+        <button onclick="selectYear('2 اعدادي')">2 اعدادي</button>
+        <button onclick="selectYear('3 اعدادي')">3 اعدادي</button>
+      </div>
     </div>
 
     <div>
-        <h4 style="color:#ff0040;">-- ابتدائي عام --</h4>
-        <div class="year-buttons">
-            <button onclick="selectYear('1 ابتدائي')">1 ابتدائي</button>
-            <button onclick="selectYear('2 ابتدائي')">2 ابتدائي</button>
-            <button onclick="selectYear('3 ابتدائي')">3 ابتدائي</button>
-            <button onclick="selectYear('4 ابتدائي')">4 ابتدائي</button>
-            <button onclick="selectYear('5 ابتدائي')">5 ابتدائي</button>
-            <button onclick="selectYear('6 ابتدائي')">6 ابتدائي</button>
-        </div>
+      <h4 style="color:#ff0040;">-- ابتدائي عام --</h4>
+      <div class="year-buttons">
+        <button onclick="selectYear('1 ابتدائي')">1 ابتدائي</button>
+        <button onclick="selectYear('2 ابتدائي')">2 ابتدائي</button>
+        <button onclick="selectYear('3 ابتدائي')">3 ابتدائي</button>
+        <button onclick="selectYear('4 ابتدائي')">4 ابتدائي</button>
+        <button onclick="selectYear('5 ابتدائي')">5 ابتدائي</button>
+        <button onclick="selectYear('6 ابتدائي')">6 ابتدائي</button>
+      </div>
     </div>
 
     <div id="subjects-container"></div>
-</div>
-        <div class="input-area hidden" id="input-area">
-            <input type="text" id="taskInput" placeholder="اكتب المادة...">
-            <button onclick="earnWithAd(); startSystem();" style="
-    background: #0a0a0a;
-    color: #00e5ff;
-    border: 1px solid #00e5ff;
-    font-family: monospace;
-    font-weight: bold;
-    font-size: 22px;
-    padding: 14px 28px;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    text-shadow: 0 0 10px #00e5ff;
-    box-shadow: 0 0 15px rgba(0,229,255,0.5);
-    letter-spacing: 4px;
-">ARISE</button>
-            <br>
-            <button onclick="changeYear()" style="background:transparent; border:1px solid #444; color:#666; font-size:10px; margin-top:10px;">تغيير السنة</button>
-        </div>
+  </div>
 
-        <div style="margin: 15px 0;" id="custom-area">
-            <label><input type="checkbox" id="customTimeCheck"> أنا هحدد الوقت بنفسي</label>
-            <div id="customTimeDiv" style="display:none; margin-top:10px;">
-              حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="مثال: 60" style="width:100px;">
-            </div>
-        </div>
+  <div class="input-area hidden" id="input-area">
+    <input type="text" id="taskInput" placeholder="اكتب المادة...">
+    <button onclick="startSystem()">ARISE</button>
+    <br>
+    <button onclick="changeYear()" style="background:transparent; border:1px solid #444; color:#666; font-size:10px; margin-top:10px;">تغيير السنة</button>
+  </div>
 
-        <div id="rest-box" class="hidden" style="border:1px solid #00ff88; padding:15px; margin:15px 0; background:#002211;">
-            <h3 style="color:#00ff88;">[REST TIME]</h3>
-            <p>عاش يا هنتر! خلصت بدري.</p>
-            <p>ريح دلوقتي: <span id="rest-timer">00:00</span></p>
-            <button onclick="skipRest()">ابدأ المهمة الجاية على طول</button>
-        </div>
-
-        <div id="quest-list"></div>
-
-        <div id="timer-box" class="hidden">
-            <h2 id="current-task">...</h2>
-            <div id="timer">30:00</div>
-            <button onclick="completeQuest()">تمت المهمة ✓</button>
-            <button onclick="failQuest()" class="fail-btn">فشل</button>
-        </div>
-
-        <div id="penalty-box" class="hidden penalty">
-            <h1>⚠ [PENALTY QUEST] ⚠</h1>
-            <p>لقد فشلت! عقابك: 10 ضغط الآن!</p>
-            <button onclick="closePenalty()">تم العقاب</button>
-        </div>
+  <div style="margin: 15px 0;" id="custom-area">
+    <label><input type="checkbox" id="customTimeCheck"> أنا هحدد الوقت بنفسي</label>
+    <div id="customTimeDiv" style="display:none; margin-top:10px;">
+      حدد الوقت (بالدقايق): <input type="number" id="customTime" placeholder="مثال: 60" style="width:100px;">
     </div>
+  </div>
 
-    <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
-    <audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <div id="rest-box" class="hidden">
+    <h3>[REST TIME]</h3>
+    <p>عاش يا هنتر! خلصت بدري.</p>
+    <p>ريح دلوقتي: <span id="rest-timer">00:00</span></p>
+    <button onclick="skipRest()">ابدأ المهمة الجاية على طول</button>
+  </div>
+
+  <div id="quest-list"></div>
+
+  <div id="timer-box" class="hidden">
+    <h2 id="current-task">...</h2>
+    <div id="timer">30:00</div>
+    <button onclick="completeQuest()">تمت المهمة ✓</button>
+    <button onclick="failQuest()" class="fail-btn">فشل</button>
+  </div>
+
+  <div id="penalty-box" class="hidden penalty">
+    <h1>⚠ [PENALTY QUEST] ⚠</h1>
+    <p>لقد فشلت! عقابك: 10 ضغط الآن!</p>
+    <button onclick="closePenalty()">تم العقاب</button>
+  </div>
+</div>
+
+<audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+<audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+document.getElementById('customTimeCheck')?.addEventListener('change',function(){
+  document.getElementById('customTimeDiv').style.display=this.checked?'block':'none'
+});
+</script>
 </body>
 </html>
