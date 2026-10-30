@@ -25,7 +25,6 @@
 
   <div id="year-select-area">
     <h3>[SYSTEM] اختار مرحلتك:</h3>
-    
     <div>
       <h4 style="color:#00ff88;">-- ثانوي عام --</h4>
       <div class="year-buttons">
@@ -37,7 +36,6 @@
         <button onclick="selectYear('3 ثانوي ادبي')">3 ادبي</button>
       </div>
     </div>
-
     <div>
       <h4 style="color:#00e5ff;">-- أزهر --</h4>
       <div class="year-buttons">
@@ -51,7 +49,6 @@
         <button onclick="selectYear('3 ثانوي ازهر ادبي')">3 ث ازهر ادبي</button>
       </div>
     </div>
-
     <div>
       <h4 style="color:#ffaa00;">-- اعدادي عام --</h4>
       <div class="year-buttons">
@@ -60,7 +57,6 @@
         <button onclick="selectYear('3 اعدادي')">3 اعدادي</button>
       </div>
     </div>
-
     <div>
       <h4 style="color:#ff0040;">-- ابتدائي عام --</h4>
       <div class="year-buttons">
@@ -72,7 +68,6 @@
         <button onclick="selectYear('6 ابتدائي')">6 ابتدائي</button>
       </div>
     </div>
-
     <div id="subjects-container"></div>
   </div>
 
@@ -113,20 +108,23 @@
   </div>
 </div>
 
+<!-- صوت واحد بس لكل حاجة -->
 <audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
-<audio id="arise-sound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c2a7a5.mp3?filename=level-up-191997.mp3" preload="auto"></audio>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-<audio id="alarm" preload="auto"></audio>
-<audio id="arise-sound" preload="auto"></audio>
+<audio id="arise-sound" src="https://assets.mixkit.co/active_storage/sfx/2025/2025-preview.mp3" preload="auto"></audio>
 
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 <script>
-  // لينكات مضمونة
-  document.getElementById('alarm').src = "https://actions.google.com/sounds/v1/alarms/beep_short.ogg";
-  document.getElementById('arise-sound').src = "https://assets.mixkit.co/active_storage/sfx/2025/2025-preview.mp3";
-  
   document.getElementById('customTimeCheck')?.addEventListener('change',function(){
     document.getElementById('customTimeDiv').style.display=this.checked?'block':'none'
   });
+
+  // حل مشكلة المتصفح اللي بيمنع الصوت
+  document.addEventListener('click', function() {
+    const a = document.getElementById('alarm');
+    const b = document.getElementById('arise-sound');
+    if(a){ a.volume = 0; a.play().then(()=>{a.pause(); a.currentTime=0; a.volume=1;}).catch(()=>{}); }
+    if(b){ b.volume = 0; b.play().then(()=>{b.pause(); b.currentTime=0; b.volume=1;}).catch(()=>{}); }
+  }, { once: true });
 </script>
 </body>
 </html>
