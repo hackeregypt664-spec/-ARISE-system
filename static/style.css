@@ -177,3 +177,38 @@ button:active { transform: scale(.97); }
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-thumb{background:#1e1e1e;border-radius:10px}
 ::-webkit-scrollbar-thumb:hover{background:#00e5ff44}
+/* === حل مشكلة الهز في الموبايل === */
+html, body {
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  width: 100vw !important;
+  height: 100vw !important;
+  max-width: 400px;
+  max-height: 400px;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* وقف انيميشن الـ pulse في الموبايل */
+@media (max-width: 600px) {
+  body::before {
+    animation: none !important;
+    opacity: 0.3;
+  }
+  .system-box {
+    animation: none !important;
+  }
+  button:hover {
+    transform: none !important;
+  }
+  body {
+    align-items: flex-start;
+    padding-top: 10px;
+  }
+}
