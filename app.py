@@ -158,3 +158,6 @@ def admin_logs():
     for l in logs: 
         html+= f"<p>{l[2]} - {l[0]} - {l[1]} - {l[3]}</p>"
     return html + "</body>"
+@app.route('/eLYOm7t0gzpeeTofQpnsewvgEco01W_q-G4lhokzON4.html')
+def verify():
+    return "google-site-verification: eLYOm7t0gzpeeTofQpnsewvgEco01W_q-G4lhokzON4", 200, {'Content-Type': 'text/html'}
