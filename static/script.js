@@ -3,32 +3,32 @@ let currentIndex = 0;
 let timeLeft = 0; 
 let timerInterval = null;
 let restInterval = null;
-let level = localStorage.getItem('lvl')? parseInt(localStorage.getItem('lvl')) : 1;
-let exp = localStorage.getItem('exp')? parseInt(localStorage.getItem('exp')) : 0;
+let level = parseInt(localStorage.getItem('lvl')) || 1;
+let exp = parseInt(localStorage.getItem('exp')) || 0;
 let selectedYear = localStorage.getItem('selectedYear') || "";
 let questTimes = [];
+let isTyping = false;
 
 window.onload = () => { 
     updateUI(); 
     typeWriter("اختار مرحلتك الدراسية الأول.", "system-msg");
-    const check = document.getElementById('customTimeCheck');
-    const div = document.getElementById('customTimeDiv');
-    if(check){
-        check.addEventListener('change', ()=>{
-            div.style.display = check.checked ? 'block' : 'none';
-        });
-    }
-    if(selectedYear){
-        showSubjects(selectedYear);
-    }
+    if(selectedYear){ showSubjects(selectedYear); }
 }
 
-function typeWriter(text, elementId, speed=40){
-    let i=0; 
+function typeWriter(text, elementId, speed=30){
     let el = document.getElementById(elementId);
     if(!el) return;
+    if(isTyping){ el.innerHTML = text; return; }
+    isTyping = true;
+    let i=0; 
     el.innerHTML="";
-    function typing(){ if(i<text.length){ el.innerHTML+=text.charAt(i); i++; setTimeout(typing, speed);} }
+    function typing(){ 
+        if(i<text.length){ 
+            el.innerHTML+=text.charAt(i); 
+            i++; 
+            setTimeout(typing, speed);
+        } else { isTyping = false; }
+    }
     typing();
 }
 
@@ -54,12 +54,8 @@ async function startSystem(){
     let customVal = null;
     if(customCheck && customCheck.checked){
         let v = parseInt(customInput.value);
-        if(!isNaN(v) && v > 0 && v <= 300){
-            customVal = v;
-        } else {
-            alert("حط وقت صحيح من 1 لـ 300 دقيقة");
-            return;
-        }
+        if(!isNaN(v) && v > 0 && v <= 300){ customVal = v; } 
+        else { alert("حط وقت صحيح من 1 لـ 300 دقيقة"); return; }
     }
 
     try {
@@ -70,11 +66,11 @@ async function startSystem(){
         });
         let data = await res.json();
         questTimes = data.quests;
-        typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة. اجمالي الوقت ${data.total_time} دقيقة.`, "system-msg");
+        typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة. اجمالي ${data.total_time} دقيقة.`, "system-msg");
     } catch(e){
         let fallbackTime = customVal || 45;
         questTimes = subjects.map(s => ({subject: s, time: fallbackTime}));
-        typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة (offline - ${fallbackTime} دقيقة).`, "system-msg");
+        typeWriter(`[SYSTEM] تم رصد ${quests.length} مهمة (${fallbackTime} دقيقة).`, "system-msg");
     }
 
     let list=document.getElementById('quest-list'); list.innerHTML='';
@@ -105,8 +101,7 @@ function startQuest(){
     document.getElementById('rest-box').classList.add('hidden');
     document.getElementById('current-task').innerText='مهمة: '+ questTimes[currentIndex].subject;
     
-    let minutes = questTimes[currentIndex].time;
-    timeLeft = minutes * 60;
+    timeLeft = questTimes[currentIndex].time * 60;
     updateTimer(); 
     timerInterval=setInterval(()=>{ 
         timeLeft--; 
@@ -123,17 +118,15 @@ function updateTimer(){
 
 function completeQuest(){ 
     clearInterval(timerInterval);
-    if(timeLeft > 10){
-        let restMins = Math.floor(timeLeft / 60);
-        typeWriter(`[SYSTEM] خلصت بدري! فاضل ${restMins} دقيقة راحة.`, "system-msg");
+    if(timeLeft > 60){
+        typeWriter(`[SYSTEM] خلصت بدري! فاضل ${Math.floor(timeLeft/60)} دقيقة راحة.`, "system-msg");
         document.getElementById('timer-box').classList.add('hidden');
         document.getElementById('rest-box').classList.remove('hidden');
         startRestTimer(timeLeft);
     } else {
         exp+=10; 
         if(exp>=100){level++; exp=0;} 
-        localStorage.setItem('lvl', level); 
-        localStorage.setItem('exp', exp); 
+        localStorage.setItem('lvl', level); localStorage.setItem('exp', exp); 
         updateUI(); 
         document.getElementById('alarm')?.play().catch(()=>{}); 
         currentIndex++; 
@@ -143,11 +136,11 @@ function completeQuest(){
 
 function startRestTimer(restTime){
     let restLeft = restTime;
-    document.getElementById('rest-timer').innerText = `${Math.floor(restLeft/60)}:${restLeft%60<10?'0':''}${restLeft%60}`;
+    const el = document.getElementById('rest-timer');
     clearInterval(restInterval);
     restInterval = setInterval(()=>{
         restLeft--;
-        document.getElementById('rest-timer').innerText = `${Math.floor(restLeft/60)}:${restLeft%60<10?'0':''}${restLeft%60}`;
+        el.innerText = `${Math.floor(restLeft/60)}:${String(restLeft%60).padStart(2,'0')}`;
         if(restLeft <= 0){ clearInterval(restInterval); skipRest(); }
     },1000);
 }
@@ -157,8 +150,7 @@ function skipRest(){
     document.getElementById('rest-box').classList.add('hidden');
     exp+=15;
     if(exp>=100){level++; exp=0;} 
-    localStorage.setItem('lvl', level); 
-    localStorage.setItem('exp', exp); 
+    localStorage.setItem('lvl', level); localStorage.setItem('exp', exp); 
     updateUI();
     currentIndex++;
     startQuest();
@@ -189,9 +181,12 @@ const subjectsByYear = {
     "6 ابتدائي": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "دين", "حاسب", "مهارات"],
     "1 ابتدائي ازهر": ["عربي", "انجليزي", "رياضة", "قرآن كريم", "دين"],
     "1 اعدادي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "تجويد", "أصول دين", "فقه", "نحو وصرف"],
+    "2 اعدادي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "تجويد", "أصول دين", "فقه", "نحو وصرف"],
     "3 اعدادي ازهر": ["عربي", "انجليزي", "رياضة", "علوم", "دراسات", "قرآن كريم", "تجويد", "أصول دين", "فقه", "نحو وصرف"],
-    "3 ثانوي ازهر علمي": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "رياضة بحتة", "تطبيقية", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه"],
-    "3 ثانوي ازهر ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "فلسفة", "منطق", "قرآن كريم", "تفسير", "حديث", "توحيد", "فقه", "نحو", "صرف", "بلاغة", "ادب ونصوص"]
+    "1 ثانوي ازهر علمي": ["عربي", "انجليزي", "رياضة", "علوم", "قرآن", "فقه", "توحيد"],
+    "1 ثانوي ازهر ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "قرآن", "فقه", "توحيد"],
+    "3 ثانوي ازهر علمي": ["عربي", "انجليزي", "فيزياء", "كيمياء", "احياء", "رياضة", "قرآن", "تفسير", "حديث", "توحيد", "فقه"],
+    "3 ثانوي ازهر ادبي": ["عربي", "انجليزي", "تاريخ", "جغرافيا", "فلسفة", "منطق", "قرآن", "تفسير", "حديث", "توحيد", "فقه", "نحو", "صرف"]
 };
 
 function selectYear(year){
@@ -203,7 +198,7 @@ function showSubjects(year){
     const container = document.getElementById('subjects-container');
     if(!container) return;
     container.innerHTML = `<h3>مواد ${year}:</h3>`;
-    subjectsByYear[year].forEach(sub => {
+    (subjectsByYear[year] || []).forEach(sub => {
         container.innerHTML += `<label class="subject-check"><input type="checkbox" value="${sub}" class="subjectBox"> ${sub}</label>`;
     });
     container.innerHTML += `<button onclick="confirmSubjects()">تأكيد المواد</button>`;
@@ -216,7 +211,7 @@ function confirmSubjects(){
     document.getElementById('year-select-area').classList.add('hidden');
     document.getElementById('input-area').classList.remove('hidden');
     document.getElementById('taskInput').value = selected.join(', ');
-    typeWriter(`تمام! اخترت مواد ${selectedYear}.`, "system-msg");
+    typeWriter(`تمام! اخترت مواد ${selectedYear}. دوس ARISE!`, "system-msg");
 }
 function changeYear(){
     localStorage.removeItem('selectedYear');
