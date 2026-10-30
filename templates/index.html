@@ -113,13 +113,20 @@
   </div>
 </div>
 
-<audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
-<audio id="arise-sound" src="https://cdn.pixabay.com/audio/2022/03/24/audio_4d9c8d0e7a.mp3"></audio>
+<audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+<audio id="arise-sound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c2a7a5.mp3?filename=level-up-191997.mp3" preload="auto"></audio>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
+<audio id="alarm" preload="auto"></audio>
+<audio id="arise-sound" preload="auto"></audio>
+
 <script>
-document.getElementById('customTimeCheck')?.addEventListener('change',function(){
-  document.getElementById('customTimeDiv').style.display=this.checked?'block':'none'
-});
+  // لينكات مضمونة
+  document.getElementById('alarm').src = "https://actions.google.com/sounds/v1/alarms/beep_short.ogg";
+  document.getElementById('arise-sound').src = "https://assets.mixkit.co/active_storage/sfx/2025/2025-preview.mp3";
+  
+  document.getElementById('customTimeCheck')?.addEventListener('change',function(){
+    document.getElementById('customTimeDiv').style.display=this.checked?'block':'none'
+  });
 </script>
 </body>
 </html>
